@@ -8,15 +8,16 @@
   <meta name="author" content="Daniela Ippolito (@matefacile)">
   <meta name="copyright" content="© Daniela Ippolito (@matefacile)">
 
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#bfa100">
+  <link rel="apple-touch-icon" href="icon-512.png">
+
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <script>
     window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] } };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     :root {
@@ -24,6 +25,7 @@
       --c-accento: #27ae60;
       --c-sfondo: #fdfbf7;
       --c-testo: #2c3e50;
+      --c-errore: #e74c3c;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -33,7 +35,54 @@
       display: flex; flex-direction: column; min-height: 100vh;
       overflow-x: hidden;
     }
+/* Griglia che ospita le materie */
+#category-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 30px;
+  justify-items: center;
+}
 
+/* Card della materia: forma a "sasso" o "blob" */
+.category-card {
+  padding: 40px 20px;
+  /* border-radius con 8 valori per asimmetria */
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1; /* Le mantiene quasi tonde */
+  text-align: center;
+  color: white;
+  border: none;
+  width: 200px;
+}
+
+/* Animazione al passaggio del mouse */
+.category-card:hover {
+  transform: scale(1.05) rotate(2deg);
+  border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.category-card h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.category-card span {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-top: 10px;
+  font-weight: 600;
+}
+    /* BARRA PUNTEGGIO */
     #stars-bar {
       position: fixed; top: 20px; right: 20px;
       background: white; padding: 8px 15px; border-radius: 20px;
@@ -42,39 +91,88 @@
       font-weight: bold; color: var(--c-oro); border: 2px solid var(--c-oro);
     }
 
-    /* --- CATEGORY CARDS ASIMMETRICHE (LOOK PROFESSIONALE RICHIESTO) --- */
-    #category-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 30px;
-      padding: 20px;
+    /* ANIMAZIONI RISPOSTE */
+    .flying-star {
+      position: fixed; z-index: 9999; font-size: 24px;
+      transition: all 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+      pointer-events: none;
+    }
+    .exploding-poop {
+      position: fixed; z-index: 9999; font-size: 30px;
+      animation: poop-fade 0.6s forwards;
+      pointer-events: none;
+    }
+    @keyframes poop-fade {
+      0% { transform: scale(0.5); opacity: 0; }
+      20% { transform: scale(1.2); opacity: 1; }
+      100% { transform: translateY(20px) scale(1); opacity: 0; }
     }
 
-    .category-card {
-      padding: 40px 20px;
-      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; /* Forma asimmetrica */
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      aspect-ratio: 1 / 1; text-align: center; color: white;
+    /* === LAYOUT MENU A GRIGLIA === */
+    #menu-screen { 
+      padding: 40px 20px; 
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .category-card:hover { transform: scale(1.05) rotate(2deg); }
-    .category-card h2 { font-family: 'Cinzel', serif; margin: 0; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .category-card span { font-size: 0.9rem; opacity: 0.9; margin-top: 10px; }
-
-    /* --- LAYOUT SFIDE E GIOCO (RIPRISTINATO ORIGINALE) --- */
+    .logo-area { text-align: center; margin-bottom: 30px; }
+    .logo-area h1 { font-family: 'Cinzel', serif; color: var(--c-oro); font-size: 2rem; margin: 0; }
+    
+    #sfide-list { 
+      display: grid !important; 
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important; 
+      gap: 20px !important; 
+      width: 100% !important;
+      margin-top: 30px;
+    }
+    
     .sfida-card { 
-      background: white; padding: 18px; border-radius: 12px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; 
-      border-top: 6px solid var(--c-oro); transition: 0.2s;
-      min-height: 140px;
+      background: white; 
+      padding: 18px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      cursor: pointer; 
+      border-top: 6px solid var(--c-oro);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      height: 160px; /* Altezza uniforme */
+      text-align: left;
+    }
+    .sfida-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+    .sfida-card h2 { margin: 0 0 10px 0; font-size: 1.15rem; color: var(--c-testo); line-height: 1.2; }
+    .sfida-card p { margin: 0; font-size: 0.85rem; color: #666; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+
+    /* LAYOUT GIOCO */
+    #game-screen { display: none; flex-grow: 1; }
+    .header {
+      padding: 15px;
+      border-bottom: 3px solid var(--c-oro);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .back-btn { background: none; border: none; font-size: 1.5rem; color: var(--c-oro); cursor: pointer; }
+
+    #main-game-area { padding: 40px 0; }
+
+    .vertical-track {
+      position: relative;
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .vertical-track { position: relative; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
     .node-container { width: 100%; position: relative; z-index: 2; display: flex; margin: 18px 0; justify-content: center; }
 
-    /* ZIG-ZAG ORIGINALE */
+    /* Zig-Zag */
     .node-container:nth-child(8n+1) { transform: translateX(-110px); }
     .node-container:nth-child(8n+2) { transform: translateX(-60px); }
     .node-container:nth-child(8n+3) { transform: translateX(60px); }
@@ -88,44 +186,215 @@
       width: 55px; height: 55px; border-radius: 50%;
       background: white; border: 4px solid var(--c-oro);
       display: flex; justify-content: center; align-items: center;
-      cursor: pointer; font-weight: bold; box-shadow: 0 4px 0 #ddd;
+      cursor: pointer; font-weight: bold;
+      box-shadow: 0 4px 0 #ddd; transition: 0.2s;
     }
     .node.done { background: var(--c-accento); color: white; border-color: #1e8449; box-shadow: 0 4px 0 #1e8449; }
     .node.future { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
 
-    .avatar { position: absolute; font-size: 38px; z-index: 10; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+    /* Avatar: ora si muove con transform (più stabile) */
+    .avatar {
+      position: absolute;
+      font-size: 38px;
+      z-index: 10;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      top: 0; left: 0;
+    }
 
     #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; }
-    #modal-content { background: white; padding: 25px; border-radius: 20px; width: 92%; max-width: 500px; text-align: center; }
-    .btn-ans { background: var(--c-oro); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 10px auto; width: 100%; display: block; }
+    #modal-content { background: white; padding: 25px; border-radius: 20px; width: 92%; max-width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; }
+    
+    .btn-ans { background: var(--c-oro); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 10px auto; width: 100%; display: block; font-size: 1rem; }
+
+    #report-area { display: none; padding: 20px; background: white; text-align: center; }
+    .report-table-container { overflow-x: auto; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: top; }
+    th { background: var(--c-oro); color: white; }
+    .theory-text { font-size: 0.85rem; color: #555; font-style: italic; display: block; margin-top: 5px; border-top: 1px solid #eee; padding-top: 5px; }
+
+    @media print {
+      .no-print, #stars-bar, .header, .btn-ans, #menu-screen, #game-screen { display: none !important; }
+      #report-area { display: block !important; }
+    }
+
+    /* === BRAND / COPYRIGHT (Matefacile) === */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #666;
+      font-size: 0.82rem;
+      line-height: 1.2;
+    }
+    .brand img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+    .brand .brand-text strong { color: var(--c-testo); }
+
+    .brand-home { justify-content: center; margin-top: 10px; }
+    .brand-report { justify-content: center; margin: 8px 0 18px 0; }
+    .brand-header { margin-left: auto; margin-right: 10px; white-space: nowrap; }
+
+    @media (max-width: 420px){
+      .brand-header .brand-text { display: none; } /* in header resta solo il logo */
+    }
+
+    @media print {
+      .brand-header, .brand-home { display: none !important; }
+      .brand-report { display: flex !important; }
+    }
+/* === MOBILE QUIZ OPTIMIZATION === */
+@media (max-width: 480px) {
+
+  #modal-content {
+    width: 95%;
+    max-height: 90vh;
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  #modal-content h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  #modal-content p {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .btn-ans {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  #quiz-container {
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+
+  input#ans {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+}
+
+/* ====== POPUP QUIZ RESPONSIVE ====== */
+
+/* base: già ok su desktop */
+#modal-content{
+  width: min(92vw, 520px);
+  max-height: 88vh;
+}
+
+/* testo domanda (lo aggiungiamo con una classe, vedi punto 2) */
+.quiz-question{
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 1.05rem;
+  margin: 10px 0 8px 0;
+  overflow-wrap: anywhere;  /* evita overflow con formule/testi lunghi */
+}
+
+/* MOBILE: meno padding + font più “fit” */
+@media (max-width: 480px){
+  #modal-content{
+    width: 94vw;
+    padding: 14px;          /* prima era 25px */
+    border-radius: 16px;
+    max-height: 92vh;
+  }
+
+  #modal-content h3{
+    font-size: 1rem;
+    margin: 6px 0 8px 0;
+  }
+
+  .quiz-question{
+    font-size: 0.98rem;     /* leggermente più piccola */
+    line-height: 1.2;
+  }
+
+  .btn-ans{
+    padding: 11px;
+    font-size: 0.95rem;
+    margin: 8px auto;
+  }
+}
+
+/* DESKTOP/LIM: un filo più grande e arioso */
+@media (min-width: 900px){
+  #modal-content{
+    padding: 28px;
+    max-height: 80vh;
+  }
+
+  .quiz-question{
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+
+  .btn-ans{
+    font-size: 1.05rem;
+  }
+}
+
+
+
+
+    
   </style>
 </head>
 
 <body>
 
-  <div id="stars-bar" style="display:none;">⭐ <span id="stars-count">0</span></div>
-
-  <div id="category-screen" style="padding:40px 20px; max-width:1200px; margin:0 auto;">
-    <h1 style="text-align:center; font-family:'Cinzel'; color:var(--c-oro);">Didattica Hub</h1>
-    <div id="category-list">Caricamento...</div>
+  <div id="stars-bar">
+    <span>⭐</span>
+    <span id="stars-count">0</span>
+  </div>
+/* Inserimento categorie */
+  <div id="category-screen" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto;">
+  <div class="logo-area">
+    <h1>Didattica Hub</h1>
+    <div id="brand-cat"></div> </div>
+  <h2 style="text-align:center; font-family:'Cinzel'; color:var(--c-testo); margin-bottom:30px;">Seleziona Materia</h2>
+  
+  <div id="category-list"></div>
+</div>
+/* Inserimento categorie modifica 1*/
+  
+  <div id="menu-screen">
+    <div class="logo-area">
+      <h1>Didattica Hub</h1>
+      <div id="brand-home"></div>
+    </div>
+    <div id="sfide-list">Caricamento sfide...</div>
+    <div style="text-align: center;">
+      <button class="btn-ans no-print" style="background:#7f8c8d; max-width:180px; margin-top:30px;" onclick="resetTutto()">RESET GLOBALE</button>
+    </div>
   </div>
 
-  <div id="menu-screen" style="display:none; padding:40px 20px; max-width:1200px; margin:0 auto;">
-    <button class="btn-ans" style="max-width:220px; background:#7f8c8d;" onclick="renderCategories()">❮ Tutte le Materie</button>
-    <h1 id="selected-materia" style="text-align:center; font-family:'Cinzel'; color:var(--c-oro);">Sfide</h1>
-    <div id="sfide-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:20px;"></div>
-  </div>
+  <div id="game-screen">
+    <div class="header no-print">
+      <button class="back-btn" onclick="tornaAlMenu()">❮</button>
 
-  <div id="game-screen" style="display:none; flex-grow: 1;">
-    <div style="padding:15px; border-bottom:3px solid var(--c-oro); background:white; display:flex; justify-content:space-between; align-items:center;">
-      <button onclick="tornaAlMenu()" style="background:none; border:none; font-size:1.5rem; color:var(--c-oro); cursor:pointer;">❮</button>
       <div style="text-align:center; flex:1;">
-        <h1 id="topic-title" style="font-family:'Cinzel'; font-size:1rem; margin:0;">...</h1>
+        <h1 id="topic-title" style="font-family:'Cinzel'; font-size:1rem; margin:0; color:var(--c-oro)">...</h1>
         <small id="progress-text">0/0 completati</small>
       </div>
-      <button onclick="resetGame()" style="background:none; border:none; cursor:pointer;">🔄</button>
+
+      <div id="brand-header"></div>
+
+      <button class="back-btn" onclick="resetGame()">🔄</button>
     </div>
-    <div style="padding:40px 0;">
+
+    <div id="main-game-area">
       <div class="vertical-track">
         <div id="achilles" class="avatar">🏃‍♂️</div>
         <div id="tortoise" class="avatar">🐢</div>
@@ -134,192 +403,401 @@
     </div>
   </div>
 
-  <div id="report-area" style="display:none; padding:20px; text-align:center;">
-    <h1 style="font-family:'Cinzel';">Report Finale</h1>
-    <h2 id="final-stars"></h2>
-    <table id="report-table" style="width:100%; border-collapse:collapse; margin-top:20px;">
-      <thead><tr style="background:var(--c-oro); color:white;"><th>#</th><th>Domanda</th><th>Risposta</th><th>Tentativi</th></tr></thead>
-      <tbody id="report-body"></tbody>
-    </table>
-    <button class="btn-ans" style="width:auto; padding:10px 40px;" onclick="esportaPDF()">📄 SCARICA PDF</button>
+  <div id="report-area">
+    <h1 style="font-family:'Cinzel'; color: var(--c-oro);">Report Finale</h1>
+    <div id="brand-report"></div>
+    <h2 id="final-stars">Stelle Totali: 0</h2>
+
+    <div class="report-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Domanda</th>
+            <th>Risposta Corretta</th>
+            <th>Tentativi</th>
+          </tr>
+        </thead>
+        <tbody id="report-body"></tbody>
+      </table>
+    </div>
+
+    <div class="no-print">
+      <button class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px; margin-top: 20px;" onclick="window.print()">🖨️ STAMPA REPORT</button>
+      <button class="btn-ans" style="display:inline-block; width:auto; background:#7f8c8d; padding: 10px 30px;" onclick="tornaAlMenu()">🏠 HOME</button>
+    </div>
   </div>
 
-  <div id="modal-overlay"><div id="modal-content"><div id="quiz-container"></div><div id="feedback-msg"></div></div></div>
+  <div id="modal-overlay">
+    <div id="modal-content">
+      <div id="quiz-container"></div>
+      <div id="feedback-msg"></div>
+    </div>
+  </div>
+
+  <audio id="snd-ok" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
+  <audio id="snd-no" src="https://www.myinstants.com/media/sounds/raspberry.mp3"></audio>
 
   <script>
     const URL_INDICE_SFIDE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRo9ZeS6loicyVFU04pA29n5GxEeg3q7teyh2-Tsd4DUPzwjNyQsPE4OBwG7WF14rSdxbPeTn594i1D/pub?gid=892603852&single=true&output=csv";
-    
+
+    let SFIDE_CARICATE = [];
+    // Variabile per raggruppare le sfide: { "Matematica": { sfide: [], colore: "", ordine: 0 }, ... }
     let SFIDE_PER_MATERIA = {};
+    
     let currentSfida = null;
     let adventData = [];
+    let TOTAL_LEVELS = 0;
     let stars = 0;
 
-    async function init() {
-      try {
-        const resp = await fetch(URL_INDICE_SFIDE);
-        const rows = parseCSV(await resp.text());
-        
-        // Mappatura: r[11]=Materia, r[12]=Colore, r[13]=Ordine
-        const sfide = rows.slice(1).map(r => ({
-          id: r[0], titolo: r[1], desc: r[2], url: r[3],
-          coloreSfida: r[4] || "#bfa100",
-          materia: (r[11] || "Altro").trim(), 
-          coloreMateria: r[12] || "#bfa100",
-          ordine: parseInt(r[13]) || 99
-        }));
+    const BRAND = {
+      name: "Daniela Ippolito",
+      handle: "@matefacile",
+      logo: "assets/logo-matefacile.png",
+      year: new Date().getFullYear()
+    };
 
-        SFIDE_PER_MATERIA = sfide.reduce((acc, s) => {
-          if (!acc[s.materia]) acc[s.materia] = { sfide: [], colore: s.coloreMateria, ordine: s.ordine };
-          acc[s.materia].sfide.push(s);
-          return acc;
-        }, {});
+    function renderBrand(targetId, variant) {
+      const el = document.getElementById(targetId);
+      if (!el) return;
 
-        renderCategories();
-      } catch (e) { console.error(e); }
+      const cls =
+        variant === "home" ? "brand brand-home" :
+        variant === "header" ? "brand brand-header" :
+        variant === "report" ? "brand brand-report" :
+        "brand";
+
+      el.innerHTML = `
+        <div class="${cls}">
+          <img src="${BRAND.logo}" alt="Matefacile">
+          <div class="brand-text">
+            Creato da <strong>${BRAND.name}</strong> · ${BRAND.handle} · © ${BRAND.year}
+          </div>
+        </div>
+      `;
     }
 
-    function renderCategories() {
-      const list = document.getElementById('category-list');
-      list.innerHTML = '';
-      document.getElementById('category-screen').style.display = 'block';
-      document.getElementById('menu-screen').style.display = 'none';
+    /* --- INIZIALIZZAZIONE --- */
+ 
+async function init() {
+  // Inizializziamo i brand (incluso quello nuovo per le categorie)
+  renderBrand("brand-cat", "home");
+  renderBrand("brand-home", "home");
+  renderBrand("brand-header", "header");
+  renderBrand("brand-report", "report");
+
+  try {
+    const resp = await fetch(URL_INDICE_SFIDE);
+    const csv = await resp.text();
+    const rows = parseCSV(csv);
+    
+    // MAPPATURA DATI EXCEL
+    SFIDE_CARICATE = rows.slice(1).map(r => ({
+      id: r[0],
+      titolo: r[1],
+      desc: r[2],
+      url: r[3],
+      coloreSfida: r[4] || "#bfa100", // Colore bordo card sfida
+      materia: (r[11] || "Altro").trim(), // Colonna L: Nome Materia
+      coloreMateria: r[12] || "#bfa100",  // Colonna M: Colore del Blob
+      ordineMateria: parseInt(r[13]) || 99 // Colonna N: Ordine di apparizione
+    }));
+
+    // RAGGRUPPAMENTO LOGICO
+    // Trasformiamo la lista piatta in un oggetto diviso per materie
+    SFIDE_PER_MATERIA = SFIDE_CARICATE.reduce((acc, s) => {
+      const m = s.materia;
+      if (!acc[m]) {
+        acc[m] = { sfide: [], colore: s.coloreMateria, ordine: s.ordineMateria };
+      }
+      acc[m].sfide.push(s);
+      return acc;
+    }, {});
+
+    // Avviamo la visualizzazione del primo livello
+    renderCategories();
+  } catch (e) {
+    document.getElementById('category-list').innerText = "Errore nel caricamento del database.";
+    console.error(e);
+  }
+}
+    /* --- MENU --- */
+    function renderMenu() {
+      document.getElementById('report-area').style.display = 'none';
       document.getElementById('game-screen').style.display = 'none';
-      document.getElementById('stars-bar').style.display = 'none';
-
-      // ORDINAMENTO PARAMETRICO
-      Object.keys(SFIDE_PER_MATERIA).sort((a,b) => SFIDE_PER_MATERIA[a].ordine - SFIDE_PER_MATERIA[b].ordine).forEach(m => {
-        const card = document.createElement('div');
-        card.className = 'category-card';
-        card.style.backgroundColor = SFIDE_PER_MATERIA[m].colore;
-        card.innerHTML = `<h2>${m.toUpperCase()}</h2><span>${SFIDE_PER_MATERIA[m].sfide.length} Percorsi</span>`;
-        card.onclick = () => renderMenu(m);
-        list.appendChild(card);
-      });
-    }
-
-    function renderMenu(materia) {
-      document.getElementById('category-screen').style.display = 'none';
       document.getElementById('menu-screen').style.display = 'block';
-      document.getElementById('selected-materia').innerText = materia;
       const list = document.getElementById('sfide-list');
       list.innerHTML = '';
-      SFIDE_PER_MATERIA[materia].sfide.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'sfida-card';
-        div.style.borderColor = s.coloreSfida;
-        div.innerHTML = `<h3 style="color:${s.coloreSfida}">${s.titolo}</h3><p>${s.desc}</p>`;
-        div.onclick = () => caricaSfida(s);
-        list.appendChild(div);
+
+      SFIDE_CARICATE.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'sfida-card';
+        card.style.borderTopColor = s.colore;
+        card.onclick = () => caricaSfida(s);
+        card.innerHTML = `
+          <h2 style="color:${s.colore}">${s.titolo}</h2>
+          <p>${s.desc}</p>
+        `;
+        list.appendChild(card);
       });
+
+      document.getElementById('stars-bar').style.display = 'none';
     }
 
+    /* --- CARICAMENTO SFIDA --- */
     async function caricaSfida(sfida) {
       currentSfida = sfida;
-      stars = parseInt(localStorage.getItem('stars_'+sfida.id)) || 0;
+      document.documentElement.style.setProperty('--c-oro', sfida.colore);
+
+      stars = parseInt(localStorage.getItem('stars_' + sfida.id)) || 0;
       document.getElementById('stars-count').innerText = stars;
+
       document.getElementById('stars-bar').style.display = 'flex';
       document.getElementById('menu-screen').style.display = 'none';
       document.getElementById('game-screen').style.display = 'block';
       document.getElementById('topic-title').innerText = sfida.titolo;
-      
-      const resp = await fetch(sfida.url);
-      const rows = parseCSV(await resp.text());
-      const total = parseInt(rows[1][1]);
-      adventData = rows.slice(4, 4 + total).map((v, i) => ({
-        day: i + 1, question: v[1], checkAnswer: v[2], answerOK: v[10], 
-        options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), spiegazione: v[12]
-      }));
-      renderGame();
-    }
 
-    function renderGame() {
-      const container = document.getElementById('nodes-container');
-      container.innerHTML = '';
-      let solved = 0;
-      adventData.forEach((d, i) => {
-        const isDone = localStorage.getItem('day_'+currentSfida.id+'_'+d.day) === 'correct';
-        if (isDone) solved++;
-        const isFuture = (d.day > 1 && localStorage.getItem('day_'+currentSfida.id+'_'+(d.day-1)) !== 'correct');
-        const node = document.createElement('div');
-        node.className = `node-container`;
-        node.innerHTML = `<div id="node-${d.day}" class="node ${isDone?'done':''} ${isFuture?'future':''}" onclick="${isFuture?'':'openQuiz('+d.day+')'}">${isDone?'✔':d.day}</div>`;
-        container.appendChild(node);
-      });
-      document.getElementById('progress-text').innerText = solved + "/" + adventData.length;
-      muoviAvatar(solved);
-      if(window.MathJax) MathJax.typeset();
-      if (solved === adventData.length) setTimeout(showReport, 1000);
-    }
+      try {
+        const resp = await fetch(sfida.url);
+        const csv = await resp.text();
+        const rows = parseCSV(csv);
+        TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
 
-    function muoviAvatar(solved) {
-      setTimeout(() => {
-        const ach = document.getElementById('achilles');
-        const tort = document.getElementById('tortoise');
-        const nodeAch = document.getElementById('node-'+Math.min(solved+1, adventData.length));
-        const nodeTort = document.getElementById('node-'+Math.min(solved+2, adventData.length));
-        const track = document.querySelector('.vertical-track');
-        if (track && nodeAch) {
-            const trackRect = track.getBoundingClientRect();
-            const nRect = nodeAch.getBoundingClientRect();
-            ach.style.transform = `translate(${(nRect.left-trackRect.left)+(nRect.width/2)-(ach.offsetWidth/2)}px, ${(nRect.top-trackRect.top)-ach.offsetHeight+10}px)`;
-        }
-        if (track && nodeTort) {
-            const trackRect = track.getBoundingClientRect();
-            const nRect = nodeTort.getBoundingClientRect();
-            tort.style.transform = `translate(${(nRect.left-trackRect.left)+(nRect.width/2)-(tort.offsetWidth/2)}px, ${(nRect.top-trackRect.top)-tort.offsetHeight+10}px)`;
-        }
-      }, 100);
-    }
+        adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => ({
+          day: i + 1,
+          question: v[1],
+          checkAnswer: v[2],
+          answerOK: v[10],
+          options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o && o !== ""),
+          spiegazione: v[12]
+        }));
 
-    function openQuiz(day) {
-      const d = adventData[day-1];
-      const cont = document.getElementById('quiz-container');
-      document.getElementById('feedback-msg').innerText = "";
-      let h = `<h3>Domanda ${day}</h3><p>${d.question}</p>`;
-      d.options.forEach((o, i) => {
-        h += `<button class="btn-ans" style="background:white; color:black; border:1px solid #ddd;" onclick="check(${day},'${String.fromCharCode(65+i)}',this)">${String.fromCharCode(65+i)}. ${o}</button>`;
-      });
-      cont.innerHTML = h;
-      document.getElementById('modal-overlay').style.display = 'flex';
-      if(window.MathJax) MathJax.typeset();
-    }
-
-    function check(day, val, btn) {
-      const d = adventData[day-1];
-      if (val.toLowerCase() === d.checkAnswer.toLowerCase()) {
-        localStorage.setItem('day_'+currentSfida.id+'_'+day, 'correct');
-        stars++; document.getElementById('stars-count').innerText = stars;
-        localStorage.setItem('stars_'+currentSfida.id, stars);
-        document.getElementById('quiz-container').innerHTML = `<h2>Bravo!</h2><p>${d.spiegazione||''}</p><button class="btn-ans" onclick="chiudi()">Continua</button>`;
-        if(window.MathJax) MathJax.typeset();
-      } else {
-        stars--; document.getElementById('stars-count').innerText = stars;
-        document.getElementById('feedback-msg').innerText = "Riprova!";
+        render();
+      } catch (e) {
+        alert("Errore caricamento sfida.");
+        console.error(e);
+        tornaAlMenu();
       }
     }
 
-    function chiudi() { document.getElementById('modal-overlay').style.display = 'none'; renderGame(); }
+    /* --- RENDERING GIOCO --- */
+function renderCategories() {
+  // Gestione visibilità schermi
+  document.getElementById('category-screen').style.display = 'block';
+  document.getElementById('menu-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('stars-bar').style.display = 'none';
 
+  const list = document.getElementById('category-list');
+  list.innerHTML = '';
+
+  // Ordiniamo le materie in base alla colonna "Ordine" dell'Excel
+  const materieOrdinate = Object.keys(SFIDE_PER_MATERIA).sort((a, b) => {
+    return SFIDE_PER_MATERIA[a].ordine - SFIDE_PER_MATERIA[b].ordine;
+  });
+
+  materieOrdinate.forEach(m => {
+    const datiMateria = SFIDE_PER_MATERIA[m];
+    const card = document.createElement('div');
+    card.className = 'category-card'; // Applica il CSS asimmetrico
+    card.style.backgroundColor = datiMateria.colore; // Colore dinamico da Excel
+    
+    card.innerHTML = `
+      <h2>${m.toUpperCase()}</h2>
+      <span>${datiMateria.sfide.length} SFIDE</span>
+    `;
+    
+    // Al click mostreremo il menu delle sfide (che aggiorneremo nel prossimo step)
+    card.onclick = () => renderMenu(m);
+    list.appendChild(card);
+  });
+}
+
+    
+    function render() {
+      const container = document.getElementById('nodes-container');
+      container.innerHTML = '';
+      let solved = 0;
+
+      adventData.forEach((d, i) => {
+        const day = i + 1;
+        const isDone = localStorage.getItem('day_' + currentSfida.id + '_' + day) === 'correct';
+        if (isDone) solved++;
+
+        const isFuture = (day > 1 && localStorage.getItem('day_' + currentSfida.id + '_' + (day - 1)) !== 'correct');
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'node-container';
+        wrapper.innerHTML =
+          '<div id="node-' + day + '" class="node ' +
+          (isDone ? 'done' : (isFuture ? 'future' : '')) +
+          '" onclick="' + (isFuture ? '' : 'openQuiz(' + day + ')') + '">' +
+          (isDone ? '✔' : day) +
+          '</div>';
+
+        container.appendChild(wrapper);
+      });
+
+      document.getElementById('progress-text').innerText = solved + '/' + TOTAL_LEVELS;
+
+      muoviPersonaggi(solved);
+
+      if (window.MathJax) MathJax.typeset();
+      if (solved === TOTAL_LEVELS && TOTAL_LEVELS > 0) setTimeout(showReport, 1500);
+    }
+
+    /* === MOVIMENTO AVATAR (FIX) === */
+    function muoviPersonaggi(solved) {
+      setTimeout(() => {
+        const achIndex = Math.min(solved + 1, TOTAL_LEVELS);
+        const tortIndex = Math.min(solved + 2, TOTAL_LEVELS);
+
+        const achNode = document.getElementById('node-' + achIndex);
+        const tortNode = document.getElementById('node-' + tortIndex);
+
+        const track = document.querySelector('.vertical-track');
+        if (!track) return;
+        const trackRect = track.getBoundingClientRect();
+
+        if (achNode) moveAvatar('achilles', achNode, trackRect);
+        if (tortNode) moveAvatar('tortoise', tortNode, trackRect);
+      }, 150);
+    }
+
+    function moveAvatar(id, node, trackRect) {
+      const avatar = document.getElementById(id);
+      if (!avatar) return;
+
+      const nodeRect = node.getBoundingClientRect();
+
+      const x = (nodeRect.left - trackRect.left) + (nodeRect.width / 2) - (avatar.offsetWidth / 2);
+      const y = (nodeRect.top - trackRect.top) - avatar.offsetHeight + 10;
+
+      avatar.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    }
+
+    /* --- GESTIONE QUIZ --- */
+    function openQuiz(day) {
+      const d = adventData[day - 1];
+      const cont = document.getElementById('quiz-container');
+      document.getElementById('feedback-msg').innerText = "";
+
+      let h = '<h3>Domanda ' + day + '</h3><p class="quiz-question">' + d.question + '</p>';
+
+      if (d.options.length > 0) {
+        d.options.forEach((o, i) => {
+          h += '<button class="btn-ans" style="background:#fff; color:#333; border:2px solid #eee;" onclick="check(' + day + ', \'' + String.fromCharCode(64 + i + 1) + '\', this)">' +
+               String.fromCharCode(64 + i + 1) + '. ' + o +
+               '</button>';
+        });
+      } else {
+        h += '<input type="text" id="ans" style="width:100%; padding:15px; margin-bottom:15px; border-radius:10px;">' +
+             '<button class="btn-ans" onclick="check(' + day + ', document.getElementById(\'ans\').value, this)">INVIA</button>';
+      }
+
+      cont.innerHTML = h;
+      document.getElementById('modal-overlay').style.display = 'flex';
+      if (window.MathJax) MathJax.typeset();
+    }
+
+    function check(day, val, btn) {
+      const d = adventData[day - 1];
+      const sId = currentSfida.id;
+      let att = (parseInt(localStorage.getItem('tent_' + sId + '_' + day)) || 0) + 1;
+      localStorage.setItem('tent_' + sId + '_' + day, att);
+
+      if (val.trim().toLowerCase() === d.checkAnswer.toLowerCase()) {
+        document.getElementById('snd-ok').play().catch(() => {});
+        localStorage.setItem('day_' + sId + '_' + day, 'correct');
+        animateCorrectStar(btn);
+        document.getElementById('quiz-container').innerHTML =
+          '<h2>✨ Corretto!</h2><p>' + (d.spiegazione || '') + '</p><button class="btn-ans" onclick="chiudiEProsegui()">PROSEGUI</button>';
+        if (window.MathJax) MathJax.typeset();
+      } else {
+        document.getElementById('snd-no').play().catch(() => {});
+        animatePoop(btn);
+        document.getElementById('feedback-msg').innerText = "❌ Errato! Tentativo n. " + att;
+      }
+    }
+
+    /* --- ANIMAZIONI --- */
+    function animateCorrectStar(btn) {
+      const star = document.createElement('div');
+      star.className = 'flying-star';
+      star.innerText = '⭐';
+      const rect = btn.getBoundingClientRect();
+      star.style.left = (rect.left + rect.width / 2) + 'px';
+      star.style.top = rect.top + 'px';
+      document.body.appendChild(star);
+
+      const target = document.getElementById('stars-bar').getBoundingClientRect();
+      setTimeout(() => {
+        star.style.left = target.left + 'px';
+        star.style.top = target.top + 'px';
+        star.style.transform = 'scale(0.5)';
+        star.style.opacity = '0';
+      }, 50);
+
+      setTimeout(() => { star.remove(); stars++; aggiornaStelleVisive(); }, 850);
+    }
+
+    function animatePoop(btn) {
+      const poop = document.createElement('div');
+      poop.className = 'exploding-poop';
+      poop.innerText = '💩';
+      const rect = btn.getBoundingClientRect();
+      poop.style.left = (rect.left + rect.width / 2 - 15) + 'px';
+      poop.style.top = (rect.top - 20) + 'px';
+      document.body.appendChild(poop);
+
+      stars = stars - 1;
+      aggiornaStelleVisive();
+      setTimeout(() => poop.remove(), 650);
+    }
+
+ function aggiornaStelleVisive() {
+  const el = document.getElementById('stars-count');
+  el.innerText = stars;
+
+  if (stars < 0) {
+    el.style.color = "#e74c3c"; // rosso
+  } else {
+    el.style.color = "var(--c-oro)";
+  }
+
+  localStorage.setItem('stars_' + currentSfida.id, stars);
+}
+
+
+    function chiudiEProsegui() {
+      document.getElementById('modal-overlay').style.display = 'none';
+      render();
+    }
+
+    /* --- REPORT FINALE --- */
     function showReport() {
-      document.getElementById('game-screen').style.display='none';
-      document.getElementById('report-area').style.display='block';
-      document.getElementById('final-stars').innerText = "Stelle: " + stars;
+      document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('report-area').style.display = 'block';
+      document.getElementById('final-stars').innerText = "Stelle Finali: " + stars;
+
       const body = document.getElementById('report-body');
       body.innerHTML = '';
+
       adventData.forEach(d => {
-        body.innerHTML += `<tr><td>${d.day}</td><td>${d.question}</td><td>${d.answerOK}</td><td>-</td></tr>`;
+        const theoryPart = d.spiegazione ? '<span class="theory-text">' + d.spiegazione + '</span>' : '';
+        body.innerHTML +=
+          '<tr>' +
+            '<td>' + d.day + '</td>' +
+            '<td>' + d.question + '</td>' +
+            '<td>' + d.answerOK + theoryPart + '</td>' +
+            '<td>' + (localStorage.getItem('tent_' + currentSfida.id + '_' + d.day) || 1) + '</td>' +
+          '</tr>';
       });
-      if(window.MathJax) MathJax.typeset();
+
+      if (window.MathJax) MathJax.typeset();
     }
 
-    async function esportaPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("Report: " + currentSfida.titolo, 14, 20);
-      doc.autoTable({ html: '#report-table', startY: 30 });
-      doc.save("Report.pdf");
-    }
-
+    /* --- UTILITY --- */
     function parseCSV(csv) {
       return csv.split(/\r?\n/).filter(r => r !== "").map(row => {
         const out = []; let cur = ''; let inQ = false;
@@ -333,9 +811,28 @@
       });
     }
 
-    function tornaAlMenu() { renderCategories(); }
-    function resetGame() { if(confirm("Resettare sfida?")) { localStorage.clear(); location.reload(); } }
+    function tornaAlMenu() { location.reload(); }
+
+    function resetGame() {
+      if (confirm("Resettare questa sfida?")) {
+        adventData.forEach(d => {
+          localStorage.removeItem('day_' + currentSfida.id + '_' + d.day);
+          localStorage.removeItem('tent_' + currentSfida.id + '_' + d.day);
+        });
+        localStorage.removeItem('stars_' + currentSfida.id);
+        location.reload();
+      }
+    }
+
+    function resetTutto() {
+      if (confirm("Cancellare TUTTO?")) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
     window.onload = init;
   </script>
 </body>
 </html>
+
