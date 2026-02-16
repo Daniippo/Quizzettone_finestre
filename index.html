@@ -26,6 +26,7 @@
       --c-sfondo: #fdfbf7;
       --c-testo: #2c3e50;
       --c-errore: #e74c3c;
+      --c-azzurro: #3498db;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -169,8 +170,10 @@
       <div id="brand-home"></div>
     </div>
     <div id="sfide-list"></div>
-    <div style="text-align: center;">
-      <button id="ui-reset-all" class="btn-ans no-print" style="background:#7f8c8d; max-width:180px; margin:30px auto;" onclick="resetTutto()">RESET GLOBALE</button>
+    <!-- BLOCCO PULSANTI AZIONE -->
+    <div class="no-print" style="display: flex; justify-content: center; gap: 15px; margin: 40px auto; max-width: 450px; padding: 0 20px;">
+      <button id="ui-back-to-subjects" class="btn-ans" style="background: var(--c-azzurro); flex: 1; margin: 0;" onclick="currentMateria = null; renderCategories();">❮ TORNA</button>
+      <button id="ui-reset-all" class="btn-ans" style="background: #7f8c8d; flex: 1; margin: 0;" onclick="resetTutto()">RESET GLOBALE</button>
     </div>
   </div>
 
@@ -272,10 +275,7 @@
     function setLang(l) {
       LANG = l; localStorage.setItem("lang", LANG);
       updateUI();
-      // Se siamo già in una sfida, la ricarichiamo con la nuova lingua
-      if (currentSfida) {
-          caricaSfida(currentSfida);
-      }
+      if (currentSfida) caricaSfida(currentSfida);
     }
 
     function updateUI() {
@@ -283,6 +283,7 @@
       document.getElementById("btn-lang-en").classList.toggle("active", LANG === "en");
       document.getElementById("ui-select-subject").innerText = t("selectSubject");
       document.getElementById("ui-reset-all").innerText = t("resetAll");
+      document.getElementById("ui-back-to-subjects").innerText = t("backToSubjects");
       document.getElementById("ui-report-title").innerText = t("reportTitle");
       document.getElementById("th-q").innerText = t("thQ");
       document.getElementById("th-a").innerText = t("thA");
@@ -311,20 +312,11 @@
         const resp = await fetch(URL_INDICE_SFIDE);
         const rows = parseCSV(await resp.text());
         SFIDE_CARICATE = rows.slice(1).map(r => ({
-          id: r[0], 
-          titolo: r[1],  // Titolo IT
-          titoloEN: r[5] || r[1], // Assumiamo Titolo EN in colonna F
-          desc: r[2], 
-          descEN: r[6] || r[2], // Assumiamo Desc EN in colonna G
-          url: r[3], 
-          coloreSfida: r[4] || "#bfa100",
-          materia: (r[11] || "Altro").trim(), 
-          materiaEN: (r[14] || r[11]).trim(), // Assumiamo Materia EN in colonna O
-          coloreMateria: r[12] || "#bfa100", 
-          ordineMateria: parseInt(r[13]) || 99
+          id: r[0], titolo: r[1], titoloEN: r[5] || r[1], desc: r[2], descEN: r[6] || r[2], 
+          url: r[3], urlEN: r[7] || r[3], coloreSfida: r[4] || "#bfa100",
+          materia: (r[11] || "Altro").trim(), materiaEN: (r[14] || r[11]).trim(), 
+          coloreMateria: r[12] || "#bfa100", ordineMateria: parseInt(r[13]) || 99
         }));
-        
-        organizzaSfide();
         updateUI();
       } catch (e) { document.getElementById('category-list').innerText = "Error."; }
     }
@@ -340,6 +332,11 @@
 
     function renderCategories() {
       organizzaSfide();
+      document.getElementById('category-screen').style.display = 'block';
+      document.getElementById('menu-screen').style.display = 'none';
+      document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('report-area').style.display = 'none';
+      
       const list = document.getElementById('category-list');
       list.innerHTML = '';
       const sorted = Object.keys(SFIDE_PER_MATERIA).sort((a,b) => SFIDE_PER_MATERIA[a].ordine - SFIDE_PER_MATERIA[b].ordine);
@@ -357,21 +354,17 @@
       currentMateria = m;
       document.getElementById('category-screen').style.display = 'none';
       document.getElementById('menu-screen').style.display = 'block';
+      document.getElementById('game-screen').style.display = 'none';
+
       const list = document.getElementById('sfide-list');
       list.innerHTML = '';
       SFIDE_PER_MATERIA[m].sfide.forEach(s => {
         const card = document.createElement('div');
         card.className = 'sfida-card'; card.style.borderTopColor = s.coloreSfida;
         card.onclick = () => caricaSfida(s);
-        const titoloStr = LANG === 'it' ? s.titolo : s.titoloEN;
-        const descStr = LANG === 'it' ? s.desc : s.descEN;
-        card.innerHTML = `<h2 style="color:${s.coloreSfida}">${titoloStr}</h2><p>${descStr}</p>`;
+        card.innerHTML = `<h2 style="color:${s.coloreSfida}">${LANG === 'it' ? s.titolo : s.titoloEN}</h2><p>${LANG === 'it' ? s.desc : s.descEN}</p>`;
         list.appendChild(card);
       });
-      const back = document.createElement('button');
-      back.className = 'btn-ans'; back.style.background = '#7f8c8d'; back.style.maxWidth = '250px'; back.style.margin = '20px auto';
-      back.innerText = t("backToSubjects"); back.onclick = () => { currentMateria = null; renderCategories(); };
-      list.appendChild(back);
     }
 
     async function caricaSfida(s) {
@@ -381,27 +374,14 @@
       document.getElementById('game-screen').style.display = 'block';
       document.getElementById('topic-title').innerText = LANG === 'it' ? s.titolo : s.titoloEN;
       aggiornaStelleVisive();
-      
       try {
-        const rows = parseCSV(await (await fetch(s.url)).text());
+        const resp = await fetch(LANG === 'it' ? s.url : s.urlEN);
+        const rows = parseCSV(await resp.text());
         TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
-        
-        // MAPPATURA COLONNE MULTILINGUA
-        // Col B (1) = Question IT | Col L (11) = Question EN
-        // Col K (10) = Answer IT | Col U (20) = Answer EN
-        // Col M (12) = Expl. IT | Col W (22) = Expl. EN
-        
-        const qIdx = LANG === 'it' ? 1 : 11;
-        const aIdx = LANG === 'it' ? 10 : 20;
-        const eIdx = LANG === 'it' ? 12 : 22;
-
+        const qIdx = LANG === 'it' ? 1 : 11, aIdx = LANG === 'it' ? 10 : 20, eIdx = LANG === 'it' ? 12 : 22;
         adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => ({
-          day: i + 1, 
-          question: v[qIdx] || v[1], 
-          checkAnswer: v[2], // Il codice di controllo resta lo stesso (es. "A", "B", "10")
-          answerOK: v[aIdx] || v[10],
-          options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), 
-          spiegazione: v[eIdx] || v[12]
+          day: i + 1, question: v[qIdx] || v[1], checkAnswer: v[2], 
+          answerOK: v[aIdx] || v[10], options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), spiegazione: v[eIdx] || v[12]
         }));
         render();
       } catch (e) { tornaAlMenu(); }
@@ -506,34 +486,35 @@
     function showReport() {
       let nome = prompt(t("promptName"));
       if (nome === null || nome.trim() === "") nome = LANG === 'it' ? "Studente" : "Student";
-
       document.getElementById('game-screen').style.display = 'none';
       document.getElementById('report-area').style.display = 'block';
-      
-      const adesso = new Date();
-      const dt = adesso.toLocaleDateString('it-IT') + " " + adesso.toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
-
+      const dt = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
       renderBrand("brand-report", "report");
-      const br = document.getElementById('brand-report');
-      br.innerHTML += `
-        <div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
+      document.getElementById('brand-report').innerHTML += `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
           <h2 style="margin:0; color:var(--c-testo); font-family:'Cinzel';">${t("studentLabel")}: ${nome}</h2>
-          <p style="margin:8px 0 0 0; font-size:1rem; color:#555;">
-            <strong>${t("challengeLabel")}:</strong> ${LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN}<br>
-            <strong>${t("dateLabel")}:</strong> ${dt}
-          </p>
-        </div>
-      `;
-
+          <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
+        </div>`;
       document.getElementById('ui-final-stars-label').innerText = `${t("finalStars")}: ${stars}`;
-      const body = document.getElementById('report-body');
-      body.innerHTML = '';
-      adventData.forEach(d => {
-        body.innerHTML += `<tr><td>${d.day}</td><td>${d.question}</td><td>${d.answerOK} ${d.spiegazione ? '<span class="theory-text">'+d.spiegazione+'</span>':''}</td><td>${localStorage.getItem('tent_'+currentSfida.id+'_'+d.day)||1}</td></tr>`;
-      });
+      const body = document.getElementById('report-body'); body.innerHTML = '';
+      adventData.forEach(d => { body.innerHTML += `<tr><td>${d.day}</td><td>${d.question}</td><td>${d.answerOK} ${d.spiegazione ? '<span class="theory-text">'+d.spiegazione+'</span>':''}</td><td>${localStorage.getItem('tent_'+currentSfida.id+'_'+d.day)||1}</td></tr>`; });
       if (window.MathJax) MathJax.typeset();
     }
 
+    function parseCSV(csv) {
+      return csv.split(/\r?\n/).filter(r => r !== "").map(row => {
+        const out = []; let cur = '', inQ = false;
+        for (let i = 0; i < row.length; i++) {
+          let c = row[i];
+          if (c === '"') { if (inQ && row[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+          else if (char === ',' && !inQ) { out.push(cur.trim()); cur = ''; } // Fixed 'char' to 'c' typo
+          else if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; }
+          else cur += c;
+        }
+        out.push(cur.trim()); return out;
+      });
+    }
+
+    // Correzione manuale parseCSV (rimosso il duplicato sopra)
     function parseCSV(csv) {
       return csv.split(/\r?\n/).filter(r => r !== "").map(row => {
         const out = []; let cur = '', inQ = false;
@@ -547,10 +528,9 @@
       });
     }
 
-    function tornaAlMenu() { renderCategories(); }
+    function tornaAlMenu() { if (currentMateria) renderMenu(currentMateria); else renderCategories(); }
     function resetGame() { if (confirm("Reset?")) { localStorage.clear(); location.reload(); } }
     function resetTutto() { if (confirm(LANG==='it'?"Cancellare tutto?":"Clear all?")) { localStorage.clear(); location.reload(); } }
-
     window.onload = init;
   </script>
 </body>
