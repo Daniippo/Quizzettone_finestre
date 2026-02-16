@@ -197,6 +197,10 @@
 
   <div id="menu-screen">
     <div class="logo-area">
+       <div class="no-print lang-toggle">
+  <button id="btn-lang-it" class="lang-btn" onclick="setLang('it')">🇮🇹 Italiano</button>
+  <button id="btn-lang-en" class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+</div>
       <h1>Didattica Hub</h1>
       <div id="brand-home"></div>
     </div>
@@ -205,10 +209,7 @@
       <button class="btn-ans no-print" style="background:#7f8c8d; max-width:180px; margin:30px auto;" onclick="resetTutto()">RESET GLOBALE</button>
     </div>
   </div>
-  <div class="no-print lang-toggle">
-  <button id="btn-lang-it" class="lang-btn" onclick="setLang('it')">🇮🇹 Italiano</button>
-  <button id="btn-lang-en" class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
-</div>
+ 
 
 
   <div id="game-screen">
@@ -394,7 +395,7 @@ function setLang(l){
           acc[s.materia].sfide.push(s);
           return acc;
         }, {});
-
+updateLangUI();
         renderCategories();
       } catch (e) {
         document.getElementById('category-list').innerText = "Errore caricamento.";
