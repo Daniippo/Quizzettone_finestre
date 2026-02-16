@@ -270,7 +270,6 @@
     function setLang(l) {
       LANG = l; localStorage.setItem("lang", LANG);
       updateUI();
-      // Se l'utente è dentro una sfida, ricarica i testi della sfida stessa
       if (currentSfida) caricaSfida(currentSfida);
     }
 
@@ -385,22 +384,24 @@
       aggiornaStelleVisive();
       
       try {
-        // Carica l'URL in base alla lingua (Colonna D o H)
         const targetUrl = LANG === 'it' ? s.url_it : s.url_en;
         const resp = await fetch(targetUrl);
         const rows = parseCSV(await resp.text());
         TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
         
-        // Mappatura colonne nella sfida: 
-        // IT: Domanda(1), Risposta(10), Spiegazione(12)
-        // EN: Domanda(11), Risposta(20), Spiegazione(22)
-        const qI = LANG === 'it' ? 1 : 11;
-        const aI = LANG === 'it' ? 10 : 20;
-        const eI = LANG === 'it' ? 12 : 22;
+        // CORREZIONE INDICI: Poiché i file IT ed EN sono ora separati, 
+        // usano la stessa struttura di colonne nel rispettivo file.
+        const qIdx = 1;  // Colonna B (Domanda)
+        const aIdx = 10; // Colonna K (Risposta per il report)
+        const eIdx = 12; // Colonna M (Spiegazione)
 
         adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => ({
-          day: i + 1, question: v[qI] || v[1], checkAnswer: v[2], 
-          answerOK: v[aI] || v[10], options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), spiegazione: v[eI] || v[12]
+          day: i + 1, 
+          question: v[qIdx] || v[1], 
+          checkAnswer: v[2], // Colonna C (Lettera/Numero di controllo)
+          answerOK: v[aIdx] || v[10],
+          options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), 
+          spiegazione: v[eIdx] || v[12]
         }));
         render();
       } catch (e) { tornaAlMenu(); }
@@ -436,6 +437,7 @@
 
     function moveAvatar(id, node, trackRect) {
       const av = document.getElementById(id);
+      if (!av || !node) return;
       const nr = node.getBoundingClientRect();
       const x = (nr.left - trackRect.left) + (nr.width / 2) - (av.offsetWidth / 2);
       const y = (nr.top - trackRect.top) - av.offsetHeight + 10;
@@ -478,6 +480,9 @@
     function animateCorrectStar(btn) {
       const star = document.createElement('div');
       star.className = 'flying-star'; star.innerText = '⭐';
+      star.style.position = 'fixed';
+      star.style.zIndex = '5000';
+      star.style.transition = 'all 0.8s ease-in';
       const r = btn.getBoundingClientRect();
       star.style.left = (r.left + r.width/2) + 'px'; star.style.top = r.top + 'px';
       document.body.appendChild(star);
@@ -489,10 +494,14 @@
     function animatePoop(btn) {
       const p = document.createElement('div');
       p.className = 'exploding-poop'; p.innerText = '💩';
+      p.style.position = 'fixed';
+      p.style.zIndex = '5000';
+      p.style.transition = 'all 0.6s ease-out';
       const r = btn.getBoundingClientRect();
       p.style.left = (r.left + r.width/2 - 15) + 'px'; p.style.top = (r.top - 20) + 'px';
       document.body.appendChild(p);
       stars--; aggiornaStelleVisive();
+      setTimeout(() => { p.style.transform = 'translateY(-50px) scale(1.5)'; p.style.opacity = '0'; }, 50);
       setTimeout(() => p.remove(), 650);
     }
 
@@ -538,7 +547,6 @@
     }
 
     function tornaAlMenu() { 
-      // Nasconde sempre il gioco prima di tornare indietro per evitare sovrapposizioni
       document.getElementById('game-screen').style.display = 'none';
       if (currentMateria) renderMenu(currentMateria); else renderCategories(); 
     }
