@@ -38,39 +38,77 @@
 /* Griglia che ospita le materie */
 /* Griglia ottimizzata per PC, Tablet e Mobile */
 /* --- REGOLA GENERALE (PC e Tablet) --- */
-#category-list {
-  display: grid;
-  /* Distribuisce i blob in orizzontale finché c'è spazio */
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-  gap: 30px;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  justify-items: center;
-}
-
-/* --- REGOLA SPECIFICA PER MOBILE (Sotto i 480px) --- */
-@media (max-width: 480px) {
-  #category-list {
-    /* Forza la disposizione in verticale (1 sola colonna) */
-    grid-template-columns: 1fr; 
-    /* Riduciamo lo spazio tra i blob per non allungare troppo la pagina */
-    gap: 20px; 
-    padding: 10px;
-  }
-
-  .category-card {
-    /* Rendiamo i blob leggermente più piccoli e compatti su mobile */
-    max-width: 180px; 
-    padding: 20px 10px;
-  }
+/* Card della materia: FORZA la forma a sasso/blob */
+.category-card {
+  /* 1. Dimensioni fisse per evitare rettangoli deformi */
+  width: 220px;
+  height: 220px;
+  aspect-ratio: 1 / 1;
   
-  .category-card h2 {
-    font-size: 1.1rem; /* Testo un po' più piccolo per evitare che vada fuori */
-  }
+  /* 2. Ripristino forma asimmetrica a "pietra" */
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  
+  /* 3. Ombra più profonda per dare tridimensionalità */
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  
+  /* 4. Allineamento contenuto */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* 5. Miglioramento Leggibilità */
+  color: white;
+  text-align: center;
+  border: none;
+  overflow: hidden; /* Evita che il testo esca dai bordi della pietra */
 }
 
+/* Alternanza della forma per non renderle tutte uguali (effetto pietre naturali) */
+.category-card:nth-child(even) {
+  border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+}
+
+/* Effetto Hover migliorato */
+.category-card:hover {
+  transform: scale(1.08) rotate(-2deg);
+  box-shadow: 0 18px 36px rgba(0,0,0,0.2);
+}
+
+/* STILE TESTO DENTRO I BLOB */
+.category-card h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  margin: 0;
+  line-height: 1.1;
+  /* Contorno sfumato per leggere bene su qualsiasi colore */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5); 
+  text-transform: uppercase;
+}
+
+.category-card span {
+  font-size: 0.8rem;
+  margin-top: 10px;
+  font-weight: 700;
+  background: rgba(0,0,0,0.2); /* Etichetta semitrasparente per leggere i numeri */
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* FIX PER MOBILE: ridimensioniamo la pietra mantenendo la forma */
+@media (max-width: 480px) {
+  .category-card {
+    width: 180px;
+    height: 180px;
+  }
+  .category-card h2 {
+    font-size: 1.1rem;
+  }
+}
 /* Animazione al passaggio del mouse */
 .category-card:hover {
   transform: scale(1.05) rotate(2deg);
