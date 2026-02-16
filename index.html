@@ -36,13 +36,38 @@
       overflow-x: hidden;
     }
 /* Griglia che ospita le materie */
+/* Griglia ottimizzata per PC, Tablet e Mobile */
 #category-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 30px;
-  justify-items: center;
+  /* auto-fit: distribuisce i blob su tutta la larghezza disponibile */
+  /* minmax(200px, 1fr): i blob non scendono mai sotto i 200px, ma crescono per riempire lo schermo */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 40px; /* Aumentiamo un po' lo spazio tra i blob per PC */
+  width: 100%;
+  max-width: 1200px; /* Impedisce alla griglia di diventare troppo larga su schermi giganti */
+  margin: 0 auto;
+  padding: 20px;
+  justify-items: center; /* Centra i blob all'interno delle loro celle */
+  align-items: center;
 }
 
+/* Modifica opzionale: rendiamo i blob un po' più flessibili su PC */
+.category-card {
+  padding: 30px 15px;
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  text-align: center;
+  color: white;
+  width: 100%; /* Occupa la cella della griglia */
+  max-width: 250px; /* Ma non diventare più grande di 250px */
+}
 /* Card della materia: forma a "sasso" o "blob" */
 .category-card {
   padding: 40px 20px;
