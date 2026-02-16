@@ -78,7 +78,7 @@
     }
     .lang-btn.active { background: var(--c-oro); color: white; }
 
-    /* Menu Sfide - Modificato per evitare overflow del testo */
+    /* Menu Sfide */
     #sfide-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
     .sfida-card { 
       background: white; 
@@ -220,6 +220,7 @@
   <div id="report-area">
     <h1 id="ui-report-title" style="font-family:'Cinzel'; color: var(--c-oro);">Report Finale</h1>
     <div id="brand-report"></div>
+    <div id="student-info-box"></div>
     <h2 id="ui-final-stars-label">Stelle Totali: 0</h2>
     <div class="report-table-container">
       <table>
@@ -240,7 +241,7 @@
     </div>
   </div>
 
-  <!-- MODALE UNIFICATO (QUIZ, PROMPT, CONFIRM) -->
+  <!-- MODALE UNIFICATO (QUIZ, PROMPT, CONFIRM, HELP) -->
   <div id="modal-overlay">
     <div id="modal-content">
       <div id="modal-body"></div>
@@ -267,7 +268,8 @@
         thQ: "Domanda", thA: "Risposta Corretta", thT: "Tentativi", print: "🖨️ STAMPA REPORT", home: "🏠 HOME",
         promptName: "Sfida completata! Inserisci il tuo nome per il report:", studentLabel: "ALUNNO",
         dateLabel: "Data", createdLabel: "Creato da", challengeLabel: "Sfida", confirmReset: "Sei sicuro di voler cancellare i progressi?",
-        yes: "SI", no: "NO", ok: "OK"
+        yes: "SI", no: "NO", ok: "OK", 
+        printHelp: "Se la stampa non si avvia: clicca i tre puntini del browser (o Condividi) e seleziona 'Stampa' o 'Salva come PDF'."
       },
       en: {
         selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK",
@@ -276,7 +278,8 @@
         thQ: "Question", thA: "Correct Answer", thT: "Attempts", print: "🖨️ PRINT REPORT", home: "🏠 HOME",
         promptName: "Challenge completed! Enter your name for the report:", studentLabel: "STUDENT",
         dateLabel: "Date", createdLabel: "Created by", challengeLabel: "Challenge", confirmReset: "Are you sure you want to clear your progress?",
-        yes: "YES", no: "NO", ok: "OK"
+        yes: "YES", no: "NO", ok: "OK",
+        printHelp: "If print doesn't start: click browser menu (or Share) and select 'Print' or 'Save as PDF'."
       }
     };
 
@@ -523,7 +526,6 @@
 
     /* GESTIONE REPORT E NOME */
     function showReport() {
-      // Invece di prompt(), apriamo un modale custom
       let h = `<h3>${t("completed")}</h3><p>${t("promptName")}</p>
                <input type="text" id="student-name-input" class="input-custom" placeholder="Nome Cognome">
                <button class="btn-ans" onclick="generateFinalReport()">${t("continue")}</button>`;
@@ -542,8 +544,8 @@
       const dt = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
       
       renderBrand("brand-report", "report");
-      const bR = document.getElementById('brand-report');
-      bR.innerHTML += `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
+      const sBox = document.getElementById('student-info-box');
+      sBox.innerHTML = `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
           <h2 style="margin:0; color:var(--c-testo); font-family:'Cinzel';">${t("studentLabel")}: ${nome}</h2>
           <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${challengeTitle}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
         </div>`;
@@ -554,8 +556,26 @@
     }
 
     function eseguiStampa() {
+      // Alcuni browser mobile hanno bisogno che il focus sia sul corpo del documento
+      document.body.focus();
       window.focus();
-      window.print();
+
+      // Tentativo di stampa posticipato per permettere al browser di acquisire il focus
+      setTimeout(() => {
+        try {
+          window.print();
+        } catch (e) {
+          // Se fallisce, mostriamo un aiuto
+          const helpHtml = `<h3>Stampare su cellulare</h3><p>${t("printHelp")}</p><button class="btn-ans" onclick="closeModal()">CHIUDI</button>`;
+          openModal(helpHtml);
+        }
+      }, 500);
+
+      // Messaggio di aiuto preventivo per alcuni sistemi che bloccano window.print() in modo silenzioso
+      setTimeout(() => {
+        const helpHtml = `<h3>Opzioni di Stampa</h3><p>${t("printHelp")}</p><button class="btn-ans" onclick="closeModal()">HO CAPITO</button>`;
+        openModal(helpHtml);
+      }, 1500);
     }
 
     /* ANIMAZIONI */
