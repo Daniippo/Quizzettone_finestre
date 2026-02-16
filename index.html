@@ -78,10 +78,26 @@
     }
     .lang-btn.active { background: var(--c-oro); color: white; }
 
-    /* Menu Sfide */
+    /* Menu Sfide - Modificato per evitare overflow del testo */
     #sfide-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
-    .sfida-card { background: white; padding: 18px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; border-top: 6px solid var(--c-oro); transition: 0.2s; height: 160px; text-align: left; }
+    .sfida-card { 
+      background: white; 
+      padding: 18px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      cursor: pointer; 
+      border-top: 6px solid var(--c-oro); 
+      transition: 0.2s; 
+      min-height: 160px; 
+      height: auto; 
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      text-align: left; 
+    }
     .sfida-card:hover { transform: translateY(-4px); }
+    .sfida-card h2 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--c-testo); line-height: 1.3; }
+    .sfida-card p { margin: 0; font-size: 0.85rem; color: #666; line-height: 1.4; }
 
     /* Header di Gioco */
     .header { 
