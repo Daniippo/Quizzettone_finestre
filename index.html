@@ -78,7 +78,7 @@
     }
     .lang-btn.active { background: var(--c-oro); color: white; }
 
-    /* Menu Sfide */
+    /* Menu Sfide - Altezza dinamica e allineamento in alto */
     #sfide-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
     .sfida-card { 
       background: white; 
@@ -236,12 +236,12 @@
       </table>
     </div>
     <div class="no-print" style="margin-top: 25px;">
-      <button id="ui-print-btn" class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px;" onclick="eseguiStampa()">🖨️ STAMPA REPORT</button>
+      <button id="ui-print-btn" class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px;" onclick="window.print()">🖨️ STAMPA REPORT</button>
       <button id="ui-home-btn" class="btn-ans" style="display:inline-block; width:auto; background:#7f8c8d; padding: 10px 30px;" onclick="tornaAlMenu()">🏠 HOME</button>
     </div>
   </div>
 
-  <!-- MODALE UNIFICATO (QUIZ, PROMPT, CONFIRM, HELP) -->
+  <!-- MODALE UNIFICATO -->
   <div id="modal-overlay">
     <div id="modal-content">
       <div id="modal-body"></div>
@@ -268,8 +268,7 @@
         thQ: "Domanda", thA: "Risposta Corretta", thT: "Tentativi", print: "🖨️ STAMPA REPORT", home: "🏠 HOME",
         promptName: "Sfida completata! Inserisci il tuo nome per il report:", studentLabel: "ALUNNO",
         dateLabel: "Data", createdLabel: "Creato da", challengeLabel: "Sfida", confirmReset: "Sei sicuro di voler cancellare i progressi?",
-        yes: "SI", no: "NO", ok: "OK", 
-        printHelp: "Se la stampa non si avvia: clicca i tre puntini del browser (o Condividi) e seleziona 'Stampa' o 'Salva come PDF'."
+        yes: "SI", no: "NO", ok: "OK"
       },
       en: {
         selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK",
@@ -278,8 +277,7 @@
         thQ: "Question", thA: "Correct Answer", thT: "Attempts", print: "🖨️ PRINT REPORT", home: "🏠 HOME",
         promptName: "Challenge completed! Enter your name for the report:", studentLabel: "STUDENT",
         dateLabel: "Date", createdLabel: "Created by", challengeLabel: "Challenge", confirmReset: "Are you sure you want to clear your progress?",
-        yes: "YES", no: "NO", ok: "OK",
-        printHelp: "If print doesn't start: click browser menu (or Share) and select 'Print' or 'Save as PDF'."
+        yes: "YES", no: "NO", ok: "OK"
       }
     };
 
@@ -553,29 +551,6 @@
       const body = document.getElementById('report-body'); body.innerHTML = '';
       adventData.forEach(d => { body.innerHTML += `<tr><td>${d.day}</td><td>${d.question}</td><td>${d.answerOK} ${d.spiegazione ? '<span class="theory-text">'+d.spiegazione+'</span>':''}</td><td>${localStorage.getItem('tent_'+currentSfida.id+'_'+d.day)||1}</td></tr>`; });
       if (window.MathJax) MathJax.typeset();
-    }
-
-    function eseguiStampa() {
-      // Alcuni browser mobile hanno bisogno che il focus sia sul corpo del documento
-      document.body.focus();
-      window.focus();
-
-      // Tentativo di stampa posticipato per permettere al browser di acquisire il focus
-      setTimeout(() => {
-        try {
-          window.print();
-        } catch (e) {
-          // Se fallisce, mostriamo un aiuto
-          const helpHtml = `<h3>Stampare su cellulare</h3><p>${t("printHelp")}</p><button class="btn-ans" onclick="closeModal()">CHIUDI</button>`;
-          openModal(helpHtml);
-        }
-      }, 500);
-
-      // Messaggio di aiuto preventivo per alcuni sistemi che bloccano window.print() in modo silenzioso
-      setTimeout(() => {
-        const helpHtml = `<h3>Opzioni di Stampa</h3><p>${t("printHelp")}</p><button class="btn-ans" onclick="closeModal()">HO CAPITO</button>`;
-        openModal(helpHtml);
-      }, 1500);
     }
 
     /* ANIMAZIONI */
