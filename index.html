@@ -110,10 +110,11 @@
     .node.future { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
     .avatar { position: absolute; font-size: 38px; z-index: 10; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; top: 0; left: 0; }
 
-    /* Modali Quiz */
-    #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; }
-    #modal-content { background: white; padding: 25px; border-radius: 20px; width: 92%; max-width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; }
+    /* Modali Quiz e Prompt */
+    #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 15px; }
+    #modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; }
     .btn-ans { background: var(--c-oro); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 10px auto; width: 100%; display: block; font-size: 1rem; }
+    .input-custom { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
 
     /* Report Area */
     #report-area { padding: 20px; background: white; text-align: center; }
@@ -138,6 +139,7 @@
     @media print {
       .no-print { display: none !important; }
       #report-area { display: block !important; width: 100%; }
+      body { background: white; }
     }
   </style>
 </head>
@@ -167,7 +169,7 @@
     
     <div class="no-print" style="display: flex; justify-content: center; gap: 15px; margin: 40px auto; max-width: 500px; padding: 0 20px;">
       <button id="ui-back-to-subjects" class="btn-ans" style="background: var(--c-azzurro); flex: 1; margin: 0;" onclick="currentMateria = null; renderCategories();">❮ TORNA</button>
-      <button id="ui-reset-all" class="btn-ans" style="background: #7f8c8d; flex: 1; margin: 0;" onclick="resetTutto()">RESET GLOBALE</button>
+      <button id="ui-reset-all" class="btn-ans" style="background: #7f8c8d; flex: 1; margin: 0;" onclick="openConfirmModal('resetTutto')">RESET GLOBALE</button>
     </div>
   </div>
 
@@ -185,7 +187,7 @@
         <h1 id="topic-title" style="font-family:'Cinzel'; font-size: 0.8rem; margin: 0; color: #666; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</h1>
       </div>
       <div style="text-align: right;">
-        <button class="back-btn" onclick="resetGame()">🔄</button>
+        <button class="back-btn" onclick="openConfirmModal('resetGame')">🔄</button>
       </div>
     </div>
 
@@ -217,16 +219,16 @@
       </table>
     </div>
     <div class="no-print" style="margin-top: 25px;">
-      <button id="ui-print-btn" class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px;" onclick="window.print()">🖨️ STAMPA REPORT</button>
+      <button id="ui-print-btn" class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px;" onclick="eseguiStampa()">🖨️ STAMPA REPORT</button>
       <button id="ui-home-btn" class="btn-ans" style="display:inline-block; width:auto; background:#7f8c8d; padding: 10px 30px;" onclick="tornaAlMenu()">🏠 HOME</button>
     </div>
   </div>
 
-  <!-- MODALE QUIZ -->
+  <!-- MODALE UNIFICATO (QUIZ, PROMPT, CONFIRM) -->
   <div id="modal-overlay">
     <div id="modal-content">
-      <div id="quiz-container"></div>
-      <div id="feedback-msg"></div>
+      <div id="modal-body"></div>
+      <div id="feedback-msg" style="margin-top: 10px; font-weight: bold;"></div>
     </div>
   </div>
 
@@ -247,16 +249,18 @@
         challenges: "SFIDE", completed: "completati", correct: "✨ Corretto!", wrong: "❌ Errato!", 
         attempt: "Tentativo", continue: "PROSEGUI", reportTitle: "Report Finale", finalStars: "Stelle Totali",
         thQ: "Domanda", thA: "Risposta Corretta", thT: "Tentativi", print: "🖨️ STAMPA REPORT", home: "🏠 HOME",
-        promptName: "Sfida completata! Inserisci il tuo nome e cognome per il report:", studentLabel: "ALUNNO",
-        dateLabel: "Data", createdLabel: "Creato da", challengeLabel: "Sfida"
+        promptName: "Sfida completata! Inserisci il tuo nome per il report:", studentLabel: "ALUNNO",
+        dateLabel: "Data", createdLabel: "Creato da", challengeLabel: "Sfida", confirmReset: "Sei sicuro di voler cancellare i progressi?",
+        yes: "SI", no: "NO", ok: "OK"
       },
       en: {
         selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK",
         challenges: "CHALLENGES", completed: "completed", correct: "✨ Correct!", wrong: "❌ Wrong!", 
         attempt: "Attempt", continue: "CONTINUE", reportTitle: "Final Report", finalStars: "Total Stars",
         thQ: "Question", thA: "Correct Answer", thT: "Attempts", print: "🖨️ PRINT REPORT", home: "🏠 HOME",
-        promptName: "Challenge completed! Enter your full name for the report:", studentLabel: "STUDENT",
-        dateLabel: "Date", createdLabel: "Created by", challengeLabel: "Challenge"
+        promptName: "Challenge completed! Enter your name for the report:", studentLabel: "STUDENT",
+        dateLabel: "Date", createdLabel: "Created by", challengeLabel: "Challenge", confirmReset: "Are you sure you want to clear your progress?",
+        yes: "YES", no: "NO", ok: "OK"
       }
     };
 
@@ -270,7 +274,9 @@
     function setLang(l) {
       LANG = l; localStorage.setItem("lang", LANG);
       updateUI();
-      if (currentSfida) caricaSfida(currentSfida);
+      if (currentSfida && document.getElementById('game-screen').style.display === 'block') {
+          caricaSfida(currentSfida);
+      }
     }
 
     function updateUI() {
@@ -310,8 +316,8 @@
           id: r[0], 
           titolo: r[1], titoloEN: r[5] || r[1],
           desc: r[2], descEN: r[6] || r[2],
-          url_it: r[3], // Colonna D
-          url_en: r[7] || r[3], // Colonna H
+          url_it: r[3],
+          url_en: r[7] || r[3],
           coloreSfida: r[4] || "#bfa100",
           materia: (r[11] || "Altro").trim(), 
           materiaEN: (r[14] || r[11]).trim(),
@@ -319,7 +325,7 @@
           ordineMateria: parseInt(r[13]) || 99
         }));
         updateUI();
-      } catch (e) { document.getElementById('category-list').innerText = "Errore indice."; }
+      } catch (e) { document.getElementById('category-list').innerText = "Errore caricamento."; }
     }
 
     function organizzaSfide() {
@@ -389,14 +395,14 @@
         const rows = parseCSV(await resp.text());
         TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
         
-        const qIdx = 1;  // Colonna B (Domanda)
-        const aIdx = 10; // Colonna K (Risposta per il report)
-        const eIdx = 12; // Colonna M (Spiegazione)
+        const qIdx = 1;  
+        const aIdx = 10; 
+        const eIdx = 12; 
 
         adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => ({
           day: i + 1, 
           question: v[qIdx] || v[1], 
-          checkAnswer: v[2], // Colonna C (Lettera/Numero di controllo)
+          checkAnswer: v[2], 
           answerOK: v[aIdx] || v[10],
           options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), 
           spiegazione: v[eIdx] || v[12]
@@ -442,18 +448,28 @@
       av.style.transform = `translate(${x}px, ${y}px)`;
     }
 
+    /* SISTEMA MODALI */
+    function openModal(htmlContent) {
+      document.getElementById('modal-body').innerHTML = htmlContent;
+      document.getElementById('feedback-msg').innerText = "";
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').style.display = 'none';
+    }
+
     function openQuiz(day) {
       const d = adventData[day - 1];
-      const cont = document.getElementById('quiz-container');
-      document.getElementById('feedback-msg').innerText = "";
       let h = `<h3>${t("thQ")} ${day}</h3><p class="quiz-question">${d.question}</p>`;
       if (d.options.length > 0) {
-        d.options.forEach((o, i) => { h += `<button class="btn-ans" style="background:#fff; color:#333; border:2px solid #eee;" onclick="check(${day}, '${String.fromCharCode(65+i)}', this)">${String.fromCharCode(65+i)}. ${o}</button>`; });
+        d.options.forEach((o, i) => { 
+          h += `<button class="btn-ans" style="background:#fff; color:#333; border:2px solid #eee;" onclick="check(${day}, '${String.fromCharCode(65+i)}', this)">${String.fromCharCode(65+i)}. ${o}</button>`; 
+        });
       } else {
-        h += `<input type="text" id="ans" style="width:100%; padding:15px; margin-bottom:15px; border-radius:10px;"><button class="btn-ans" onclick="check(${day}, document.getElementById('ans').value, this)">INVIA</button>`;
+        h += `<input type="text" id="ans-input" class="input-custom"><button class="btn-ans" onclick="check(${day}, document.getElementById('ans-input').value, this)">${t("ok")}</button>`;
       }
-      cont.innerHTML = h;
-      document.getElementById('modal-overlay').style.display = 'flex';
+      openModal(h);
       if (window.MathJax) MathJax.typeset();
     }
 
@@ -466,7 +482,7 @@
         document.getElementById('snd-ok').play().catch(() => {});
         localStorage.setItem('day_' + sId + '_' + day, 'correct');
         animateCorrectStar(btn);
-        document.getElementById('quiz-container').innerHTML = `<h2>${t("correct")}</h2><p>${d.spiegazione || ''}</p><button class="btn-ans" onclick="chiudiEProsegui()">${t("continue")}</button>`;
+        document.getElementById('modal-body').innerHTML = `<h2>${t("correct")}</h2><p>${d.spiegazione || ''}</p><button class="btn-ans" onclick="chiudiEProsegui()">${t("continue")}</button>`;
         if (window.MathJax) MathJax.typeset();
       } else {
         document.getElementById('snd-no').play().catch(() => {});
@@ -475,12 +491,62 @@
       }
     }
 
+    function openConfirmModal(action) {
+      let h = `<p style="font-size:1.1rem; margin-bottom:20px;">${t("confirmReset")}</p>
+               <div style="display:flex; gap:10px;">
+                 <button class="btn-ans" style="background:var(--c-errore);" onclick="executeAction('${action}')">${t("yes")}</button>
+                 <button class="btn-ans" style="background:#7f8c8d;" onclick="closeModal()">${t("no")}</button>
+               </div>`;
+      openModal(h);
+    }
+
+    function executeAction(action) {
+      localStorage.clear();
+      location.reload();
+    }
+
+    /* GESTIONE REPORT E NOME */
+    function showReport() {
+      // Invece di prompt(), apriamo un modale custom
+      let h = `<h3>${t("completed")}</h3><p>${t("promptName")}</p>
+               <input type="text" id="student-name-input" class="input-custom" placeholder="Nome Cognome">
+               <button class="btn-ans" onclick="generateFinalReport()">${t("continue")}</button>`;
+      openModal(h);
+    }
+
+    function generateFinalReport() {
+      let nome = document.getElementById('student-name-input').value.trim();
+      if (nome === "") nome = LANG === 'it' ? "Studente" : "Student";
+      closeModal();
+
+      document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('report-area').style.display = 'block';
+      
+      const challengeTitle = LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN;
+      const dt = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
+      
+      renderBrand("brand-report", "report");
+      const bR = document.getElementById('brand-report');
+      bR.innerHTML += `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
+          <h2 style="margin:0; color:var(--c-testo); font-family:'Cinzel';">${t("studentLabel")}: ${nome}</h2>
+          <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${challengeTitle}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
+        </div>`;
+      document.getElementById('ui-final-stars-label').innerText = `${t("finalStars")}: ${stars}`;
+      const body = document.getElementById('report-body'); body.innerHTML = '';
+      adventData.forEach(d => { body.innerHTML += `<tr><td>${d.day}</td><td>${d.question}</td><td>${d.answerOK} ${d.spiegazione ? '<span class="theory-text">'+d.spiegazione+'</span>':''}</td><td>${localStorage.getItem('tent_'+currentSfida.id+'_'+d.day)||1}</td></tr>`; });
+      if (window.MathJax) MathJax.typeset();
+    }
+
+    function eseguiStampa() {
+      window.focus();
+      window.print();
+    }
+
+    /* ANIMAZIONI */
     function animateCorrectStar(btn) {
       const star = document.createElement('div');
       star.className = 'flying-star'; star.innerText = '⭐';
-      star.style.position = 'fixed';
-      star.style.zIndex = '5000';
-      star.style.transition = 'all 0.8s ease-in';
+      star.style.position = 'fixed'; star.style.zIndex = '5000'; star.style.transition = 'all 0.8s ease-in';
       const r = btn.getBoundingClientRect();
       star.style.left = (r.left + r.width/2) + 'px'; star.style.top = r.top + 'px';
       document.body.appendChild(star);
@@ -492,9 +558,7 @@
     function animatePoop(btn) {
       const p = document.createElement('div');
       p.className = 'exploding-poop'; p.innerText = '💩';
-      p.style.position = 'fixed';
-      p.style.zIndex = '5000';
-      p.style.transition = 'all 0.6s ease-out';
+      p.style.position = 'fixed'; p.style.zIndex = '5000'; p.style.transition = 'all 0.6s ease-out';
       const r = btn.getBoundingClientRect();
       p.style.left = (r.left + r.width/2 - 15) + 'px'; p.style.top = (r.top - 20) + 'px';
       document.body.appendChild(p);
@@ -509,31 +573,7 @@
       localStorage.setItem('stars_' + currentSfida.id, stars);
     }
 
-    function chiudiEProsegui() { document.getElementById('modal-overlay').style.display = 'none'; render(); }
-
-    function showReport() {
-      let nome = prompt(t("promptName"));
-      if (nome === null || nome.trim() === "") nome = LANG === 'it' ? "Studente" : "Student";
-      
-      const challengeTitle = LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN;
-      // Imposto dinamicamente il titolo del documento per definire il nome del file PDF
-      document.title = `Report_${nome}_${challengeTitle}`.replace(/\s+/g, '_');
-
-      document.getElementById('game-screen').style.display = 'none';
-      document.getElementById('report-area').style.display = 'block';
-      
-      const dt = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
-      renderBrand("brand-report", "report");
-      const bR = document.getElementById('brand-report');
-      bR.innerHTML += `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
-          <h2 style="margin:0; color:var(--c-testo); font-family:'Cinzel';">${t("studentLabel")}: ${nome}</h2>
-          <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${challengeTitle}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
-        </div>`;
-      document.getElementById('ui-final-stars-label').innerText = `${t("finalStars")}: ${stars}`;
-      const body = document.getElementById('report-body'); body.innerHTML = '';
-      adventData.forEach(d => { body.innerHTML += `<tr><td>${d.day}</td><td>${d.question}</td><td>${d.answerOK} ${d.spiegazione ? '<span class="theory-text">'+d.spiegazione+'</span>':''}</td><td>${localStorage.getItem('tent_'+currentSfida.id+'_'+d.day)||1}</td></tr>`; });
-      if (window.MathJax) MathJax.typeset();
-    }
+    function chiudiEProsegui() { closeModal(); render(); }
 
     function parseCSV(csv) {
       return csv.split(/\r?\n/).filter(r => r !== "").map(row => {
@@ -550,13 +590,9 @@
 
     function tornaAlMenu() { 
       document.getElementById('game-screen').style.display = 'none';
-      // Reimposto il titolo originale quando esco dal report o dalla sfida
-      document.title = "Didattica Hub - Sfida Achille e la Tartaruga";
+      document.getElementById('report-area').style.display = 'none';
       if (currentMateria) renderMenu(currentMateria); else renderCategories(); 
     }
-    
-    function resetGame() { if (confirm("Reset?")) { localStorage.clear(); location.reload(); } }
-    function resetTutto() { if (confirm(LANG==='it'?"Cancellare tutto?":"Clear all?")) { localStorage.clear(); location.reload(); } }
     
     window.onload = init;
   </script>
