@@ -389,8 +389,6 @@
         const rows = parseCSV(await resp.text());
         TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
         
-        // CORREZIONE INDICI: Poiché i file IT ed EN sono ora separati, 
-        // usano la stessa struttura di colonne nel rispettivo file.
         const qIdx = 1;  // Colonna B (Domanda)
         const aIdx = 10; // Colonna K (Risposta per il report)
         const eIdx = 12; // Colonna M (Spiegazione)
@@ -517,6 +515,10 @@
       let nome = prompt(t("promptName"));
       if (nome === null || nome.trim() === "") nome = LANG === 'it' ? "Studente" : "Student";
       
+      const challengeTitle = LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN;
+      // Imposto dinamicamente il titolo del documento per definire il nome del file PDF
+      document.title = `Report_${nome}_${challengeTitle}`.replace(/\s+/g, '_');
+
       document.getElementById('game-screen').style.display = 'none';
       document.getElementById('report-area').style.display = 'block';
       
@@ -525,7 +527,7 @@
       const bR = document.getElementById('brand-report');
       bR.innerHTML += `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
           <h2 style="margin:0; color:var(--c-testo); font-family:'Cinzel';">${t("studentLabel")}: ${nome}</h2>
-          <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
+          <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${challengeTitle}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
         </div>`;
       document.getElementById('ui-final-stars-label').innerText = `${t("finalStars")}: ${stars}`;
       const body = document.getElementById('report-body'); body.innerHTML = '';
@@ -548,6 +550,8 @@
 
     function tornaAlMenu() { 
       document.getElementById('game-screen').style.display = 'none';
+      // Reimposto il titolo originale quando esco dal report o dalla sfida
+      document.title = "Didattica Hub - Sfida Achille e la Tartaruga";
       if (currentMateria) renderMenu(currentMateria); else renderCategories(); 
     }
     
