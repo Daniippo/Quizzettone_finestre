@@ -340,13 +340,30 @@ function updateLangUI(){
   bIt.classList.toggle("active", LANG === "it");
   bEn.classList.toggle("active", LANG === "en");
 }
+let MATERIA_SCELTA = null;
 
 function setLang(l){
   LANG = l;
   localStorage.setItem("lang", LANG);
   updateLangUI();
-  renderMenu(); // ridisegna il menu (e le materie, se hai filtro)
+
+  // Se non ho ancora scelto la materia, resto/aggiorno la schermata materie
+  if (!MATERIA_SCELTA) {
+    renderCategories();
+    return;
+  }
+
+  // Se ho già scelto la materia (sono nel menu), ridisegno quel menu
+  if (document.getElementById('menu-screen').style.display !== 'none') {
+    renderMenu(MATERIA_SCELTA);
+    return;
+  }
+
+  // Se sono nel gioco, NON cambio a metà partita (scelta tua).
+  // Se vuoi, puoi forzare reload della sfida:
+  // caricaSfida(currentSfida);
 }
+
 
 
 
