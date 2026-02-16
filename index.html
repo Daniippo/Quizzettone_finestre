@@ -542,28 +542,51 @@ async function init() {
   }
 }
     /* --- MENU --- */
-    function renderMenu() {
-      document.getElementById('report-area').style.display = 'none';
-      document.getElementById('game-screen').style.display = 'none';
-      document.getElementById('menu-screen').style.display = 'block';
-      const list = document.getElementById('sfide-list');
-      list.innerHTML = '';
+  /* --- NUOVA FUNZIONE MENU FILTRATA PER MATERIA --- */
+function renderMenu(materiaScelta) {
+  // 1. Gestione Visibilità
+  document.getElementById('category-screen').style.display = 'none'; // Nascondi i blob
+  document.getElementById('report-area').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('menu-screen').style.display = 'block';    // Mostra elenco sfide
 
-      SFIDE_CARICATE.forEach(s => {
-        const card = document.createElement('div');
-        card.className = 'sfida-card';
-        card.style.borderTopColor = s.colore;
-        card.onclick = () => caricaSfida(s);
-        card.innerHTML = `
-          <h2 style="color:${s.colore}">${s.titolo}</h2>
-          <p>${s.desc}</p>
-        `;
-        list.appendChild(card);
-      });
+  // 2. Pulizia e Titolo
+  const list = document.getElementById('sfide-list');
+  list.innerHTML = '';
+  
+  // Opzionale: possiamo cambiare il titolo del menu in base alla materia
+  const titoloMenu = document.querySelector('#menu-screen h1');
+  if (titoloMenu) titoloMenu.innerText = "Sfide di " + materiaScelta;
 
-      document.getElementById('stars-bar').style.display = 'none';
-    }
+  // 3. Recupero delle sfide filtrate
+  // Prendiamo solo le sfide che appartengono alla materia selezionata
+  const sfideFiltrate = SFIDE_PER_MATERIA[materiaScelta].sfide;
 
+  // 4. Creazione delle card per ogni sfida
+  sfideFiltrate.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'sfida-card';
+    card.style.borderTopColor = s.coloreSfida; // Usa il colore della sfida dall'Excel
+    card.onclick = () => caricaSfida(s);
+    card.innerHTML = `
+      <h2 style="color:${s.coloreSfida}">${s.titolo}</h2>
+      <p>${s.desc}</p>
+    `;
+    list.appendChild(card);
+  });
+
+  // 5. Aggiungiamo un pulsante per tornare indietro ai blob delle materie
+  const btnIndietro = document.createElement('button');
+  btnIndietro.className = 'btn-ans';
+  btnIndietro.style.background = '#7f8c8d';
+  btnIndietro.style.maxWidth = '200px';
+  btnIndietro.style.margin = '20px auto';
+  btnIndietro.innerText = '❮ TORNA ALLE MATERIE';
+  btnIndietro.onclick = renderCategories; // Chiama la funzione che mostra i blob
+  list.appendChild(btnIndietro);
+
+  document.getElementById('stars-bar').style.display = 'none';
+}
     /* --- CARICAMENTO SFIDA --- */
     async function caricaSfida(sfida) {
       currentSfida = sfida;
@@ -831,7 +854,10 @@ function renderCategories() {
       });
     }
 
-    function tornaAlMenu() { location.reload(); }
+   function tornaAlMenu() {
+  // Invece di ricaricare tutto, torniamo alla schermata delle categorie
+  renderCategories();
+}
 
     function resetGame() {
       if (confirm("Resettare questa sfida?")) {
