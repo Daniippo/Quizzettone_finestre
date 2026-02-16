@@ -40,7 +40,7 @@
     /* Schermate */
     #category-screen, #menu-screen, #game-screen, #report-area { display: none; width: 100%; }
 
-    /* Griglia delle materie (Pietre) */
+    /* Schermata Iniziale - Pietre Materie */
     #category-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -70,10 +70,8 @@
     .category-card h2 { font-family: 'Cinzel', serif; font-size: 1.2rem; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3); text-transform: uppercase; }
     .category-card span { font-size: 0.8rem; margin-top: 10px; background: rgba(0,0,0,0.15); padding: 4px 12px; border-radius: 20px; font-weight: bold; }
 
-    /* Lingua Toggle */
-    .lang-toggle {
-      display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;
-    }
+    /* Selettore Lingua */
+    .lang-toggle { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
     .lang-btn {
       border: 2px solid var(--c-oro); background: white; color: var(--c-testo);
       padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s;
@@ -84,8 +82,6 @@
     #sfide-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
     .sfida-card { background: white; padding: 18px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; border-top: 6px solid var(--c-oro); transition: 0.2s; height: 160px; text-align: left; }
     .sfida-card:hover { transform: translateY(-4px); }
-    .sfida-card h2 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--c-testo); }
-    .sfida-card p { margin: 0; font-size: 0.85rem; color: #666; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
 
     /* Header di Gioco */
     .header { 
@@ -95,11 +91,11 @@
     }
     .back-btn { background: none; border: none; font-size: 1.5rem; color: var(--c-oro); cursor: pointer; }
 
-    /* Percorso di Gioco */
-    #main-game-area { padding: 40px 0; }
+    /* Percorso Avatar */
     .vertical-track { position: relative; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
     .node-container { width: 100%; position: relative; z-index: 2; display: flex; margin: 18px 0; justify-content: center; }
 
+    /* Zig Zag Nodes */
     .node-container:nth-child(8n+1) { transform: translateX(-110px); }
     .node-container:nth-child(8n+2) { transform: translateX(-60px); }
     .node-container:nth-child(8n+3) { transform: translateX(60px); }
@@ -112,10 +108,9 @@
     .node { width: 55px; height: 55px; border-radius: 50%; background: white; border: 4px solid var(--c-oro); display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; box-shadow: 0 4px 0 #ddd; transition: 0.2s; }
     .node.done { background: var(--c-accento); color: white; border-color: #1e8449; box-shadow: 0 4px 0 #1e8449; }
     .node.future { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
-
     .avatar { position: absolute; font-size: 38px; z-index: 10; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; top: 0; left: 0; }
 
-    /* Modale Quiz */
+    /* Modali Quiz */
     #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; }
     #modal-content { background: white; padding: 25px; border-radius: 20px; width: 92%; max-width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; }
     .btn-ans { background: var(--c-oro); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 10px auto; width: 100%; display: block; font-size: 1rem; }
@@ -134,7 +129,6 @@
     .brand-home { justify-content: center; margin-top: 10px; }
     .brand-report { justify-content: center; margin: 8px 0 18px 0; }
 
-    /* Mobile */
     @media (max-width: 480px) {
       .category-card { width: 180px; height: 180px; }
       #category-list { grid-template-columns: 1fr; }
@@ -143,13 +137,13 @@
 
     @media print {
       .no-print { display: none !important; }
-      #report-area { display: block !important; }
+      #report-area { display: block !important; width: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- SCHERMATA 1: CATEGORIE -->
+  <!-- SCHERMATA MATERIE -->
   <div id="category-screen" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto; display: block;">
     <div class="lang-toggle no-print">
       <button id="btn-lang-it" class="lang-btn" onclick="setLang('it')">🇮🇹 Italiano</button>
@@ -163,21 +157,21 @@
     <div id="category-list"></div>
   </div>
 
-  <!-- SCHERMATA 2: MENU SFIDE -->
+  <!-- SCHERMATA MENU SFIDE -->
   <div id="menu-screen">
     <div class="logo-area">
       <h1 id="ui-menu-title">Didattica Hub</h1>
       <div id="brand-home"></div>
     </div>
-    <div id="sfide-list"></div>
-    <!-- BLOCCO PULSANTI AZIONE -->
-    <div class="no-print" style="display: flex; justify-content: center; gap: 15px; margin: 40px auto; max-width: 450px; padding: 0 20px;">
+    <div id="sfide-list" style="padding: 0 20px; max-width: 1200px; margin: 0 auto;"></div>
+    
+    <div class="no-print" style="display: flex; justify-content: center; gap: 15px; margin: 40px auto; max-width: 500px; padding: 0 20px;">
       <button id="ui-back-to-subjects" class="btn-ans" style="background: var(--c-azzurro); flex: 1; margin: 0;" onclick="currentMateria = null; renderCategories();">❮ TORNA</button>
       <button id="ui-reset-all" class="btn-ans" style="background: #7f8c8d; flex: 1; margin: 0;" onclick="resetTutto()">RESET GLOBALE</button>
     </div>
   </div>
 
-  <!-- SCHERMATA 3: GIOCO -->
+  <!-- SCHERMATA GIOCO -->
   <div id="game-screen">
     <div class="header no-print">
       <div style="display: flex; align-items: center; gap: 8px;">
@@ -194,6 +188,7 @@
         <button class="back-btn" onclick="resetGame()">🔄</button>
       </div>
     </div>
+
     <div id="main-game-area">
       <div class="vertical-track">
         <div id="achilles" class="avatar">🏃‍♂️</div>
@@ -203,7 +198,7 @@
     </div>
   </div>
 
-  <!-- SCHERMATA 4: REPORT -->
+  <!-- SCHERMATA REPORT -->
   <div id="report-area">
     <h1 id="ui-report-title" style="font-family:'Cinzel'; color: var(--c-oro);">Report Finale</h1>
     <div id="brand-report"></div>
@@ -248,7 +243,7 @@
     let LANG = localStorage.getItem("lang") || "it";
     const I18N = {
       it: {
-        selectSubject: "Seleziona Materia", resetAll: "RESET GLOBALE", backToSubjects: "❮ TORNA ALLE MATERIE",
+        selectSubject: "Seleziona Materia", resetAll: "RESET GLOBALE", backToSubjects: "❮ TORNA",
         challenges: "SFIDE", completed: "completati", correct: "✨ Corretto!", wrong: "❌ Errato!", 
         attempt: "Tentativo", continue: "PROSEGUI", reportTitle: "Report Finale", finalStars: "Stelle Totali",
         thQ: "Domanda", thA: "Risposta Corretta", thT: "Tentativi", print: "🖨️ STAMPA REPORT", home: "🏠 HOME",
@@ -256,7 +251,7 @@
         dateLabel: "Data", createdLabel: "Creato da", challengeLabel: "Sfida"
       },
       en: {
-        selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK TO SUBJECTS",
+        selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK",
         challenges: "CHALLENGES", completed: "completed", correct: "✨ Correct!", wrong: "❌ Wrong!", 
         attempt: "Attempt", continue: "CONTINUE", reportTitle: "Final Report", finalStars: "Total Stars",
         thQ: "Question", thA: "Correct Answer", thT: "Attempts", print: "🖨️ PRINT REPORT", home: "🏠 HOME",
@@ -275,6 +270,7 @@
     function setLang(l) {
       LANG = l; localStorage.setItem("lang", LANG);
       updateUI();
+      // Se l'utente è dentro una sfida, ricarica i testi della sfida stessa
       if (currentSfida) caricaSfida(currentSfida);
     }
 
@@ -312,13 +308,19 @@
         const resp = await fetch(URL_INDICE_SFIDE);
         const rows = parseCSV(await resp.text());
         SFIDE_CARICATE = rows.slice(1).map(r => ({
-          id: r[0], titolo: r[1], titoloEN: r[5] || r[1], desc: r[2], descEN: r[6] || r[2], 
-          url: r[3], urlEN: r[7] || r[3], coloreSfida: r[4] || "#bfa100",
-          materia: (r[11] || "Altro").trim(), materiaEN: (r[14] || r[11]).trim(), 
-          coloreMateria: r[12] || "#bfa100", ordineMateria: parseInt(r[13]) || 99
+          id: r[0], 
+          titolo: r[1], titoloEN: r[5] || r[1],
+          desc: r[2], descEN: r[6] || r[2],
+          url_it: r[3], // Colonna D
+          url_en: r[7] || r[3], // Colonna H
+          coloreSfida: r[4] || "#bfa100",
+          materia: (r[11] || "Altro").trim(), 
+          materiaEN: (r[14] || r[11]).trim(),
+          coloreMateria: r[12] || "#bfa100",
+          ordineMateria: parseInt(r[13]) || 99
         }));
         updateUI();
-      } catch (e) { document.getElementById('category-list').innerText = "Error."; }
+      } catch (e) { document.getElementById('category-list').innerText = "Errore indice."; }
     }
 
     function organizzaSfide() {
@@ -355,14 +357,18 @@
       document.getElementById('category-screen').style.display = 'none';
       document.getElementById('menu-screen').style.display = 'block';
       document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('report-area').style.display = 'none';
 
       const list = document.getElementById('sfide-list');
       list.innerHTML = '';
-      SFIDE_PER_MATERIA[m].sfide.forEach(s => {
+      const sfideFiltrate = SFIDE_PER_MATERIA[m].sfide;
+      sfideFiltrate.forEach(s => {
         const card = document.createElement('div');
         card.className = 'sfida-card'; card.style.borderTopColor = s.coloreSfida;
         card.onclick = () => caricaSfida(s);
-        card.innerHTML = `<h2 style="color:${s.coloreSfida}">${LANG === 'it' ? s.titolo : s.titoloEN}</h2><p>${LANG === 'it' ? s.desc : s.descEN}</p>`;
+        const tStr = LANG === 'it' ? s.titolo : s.titoloEN;
+        const dStr = LANG === 'it' ? s.desc : s.descEN;
+        card.innerHTML = `<h2 style="color:${s.coloreSfida}">${tStr}</h2><p>${dStr}</p>`;
         list.appendChild(card);
       });
     }
@@ -370,18 +376,31 @@
     async function caricaSfida(s) {
       currentSfida = s;
       stars = parseInt(localStorage.getItem('stars_' + s.id)) || 0;
+      
       document.getElementById('menu-screen').style.display = 'none';
       document.getElementById('game-screen').style.display = 'block';
+      document.getElementById('report-area').style.display = 'none';
+      
       document.getElementById('topic-title').innerText = LANG === 'it' ? s.titolo : s.titoloEN;
       aggiornaStelleVisive();
+      
       try {
-        const resp = await fetch(LANG === 'it' ? s.url : s.urlEN);
+        // Carica l'URL in base alla lingua (Colonna D o H)
+        const targetUrl = LANG === 'it' ? s.url_it : s.url_en;
+        const resp = await fetch(targetUrl);
         const rows = parseCSV(await resp.text());
         TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
-        const qIdx = LANG === 'it' ? 1 : 11, aIdx = LANG === 'it' ? 10 : 20, eIdx = LANG === 'it' ? 12 : 22;
+        
+        // Mappatura colonne nella sfida: 
+        // IT: Domanda(1), Risposta(10), Spiegazione(12)
+        // EN: Domanda(11), Risposta(20), Spiegazione(22)
+        const qI = LANG === 'it' ? 1 : 11;
+        const aI = LANG === 'it' ? 10 : 20;
+        const eI = LANG === 'it' ? 12 : 22;
+
         adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => ({
-          day: i + 1, question: v[qIdx] || v[1], checkAnswer: v[2], 
-          answerOK: v[aIdx] || v[10], options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), spiegazione: v[eIdx] || v[12]
+          day: i + 1, question: v[qI] || v[1], checkAnswer: v[2], 
+          answerOK: v[aI] || v[10], options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), spiegazione: v[eI] || v[12]
         }));
         render();
       } catch (e) { tornaAlMenu(); }
@@ -407,18 +426,20 @@
 
     function muoviPersonaggi(s) {
       setTimeout(() => {
-        const achNode = document.getElementById('node-' + Math.min(s + 1, TOTAL_LEVELS));
-        const tortNode = document.getElementById('node-' + Math.min(s + 2, TOTAL_LEVELS));
+        const aN = document.getElementById('node-' + Math.min(s + 1, TOTAL_LEVELS));
+        const tN = document.getElementById('node-' + Math.min(s + 2, TOTAL_LEVELS));
         const track = document.querySelector('.vertical-track');
-        if (achNode && track) moveAvatar('achilles', achNode, track.getBoundingClientRect());
-        if (tortNode && track) moveAvatar('tortoise', tortNode, track.getBoundingClientRect());
+        if (aN && track) moveAvatar('achilles', aN, track.getBoundingClientRect());
+        if (tN && track) moveAvatar('tortoise', tN, track.getBoundingClientRect());
       }, 150);
     }
 
     function moveAvatar(id, node, trackRect) {
       const av = document.getElementById(id);
       const nr = node.getBoundingClientRect();
-      av.style.transform = `translate(${(nr.left - trackRect.left) + (nr.width/2) - (av.offsetWidth/2)}px, ${(nr.top - trackRect.top) - av.offsetHeight + 10}px)`;
+      const x = (nr.left - trackRect.left) + (nr.width / 2) - (av.offsetWidth / 2);
+      const y = (nr.top - trackRect.top) - av.offsetHeight + 10;
+      av.style.transform = `translate(${x}px, ${y}px)`;
     }
 
     function openQuiz(day) {
@@ -476,8 +497,8 @@
     }
 
     function aggiornaStelleVisive() {
-      const elH = document.getElementById('stars-count-header');
-      if (elH) { elH.innerText = stars; elH.style.color = stars < 0 ? "#e74c3c" : "var(--c-oro)"; }
+      const el = document.getElementById('stars-count-header');
+      if (el) { el.innerText = stars; el.style.color = stars < 0 ? "#e74c3c" : "var(--c-oro)"; }
       localStorage.setItem('stars_' + currentSfida.id, stars);
     }
 
@@ -486,11 +507,14 @@
     function showReport() {
       let nome = prompt(t("promptName"));
       if (nome === null || nome.trim() === "") nome = LANG === 'it' ? "Studente" : "Student";
+      
       document.getElementById('game-screen').style.display = 'none';
       document.getElementById('report-area').style.display = 'block';
+      
       const dt = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
       renderBrand("brand-report", "report");
-      document.getElementById('brand-report').innerHTML += `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
+      const bR = document.getElementById('brand-report');
+      bR.innerHTML += `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
           <h2 style="margin:0; color:var(--c-testo); font-family:'Cinzel';">${t("studentLabel")}: ${nome}</h2>
           <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
         </div>`;
@@ -506,7 +530,6 @@
         for (let i = 0; i < row.length; i++) {
           let c = row[i];
           if (c === '"') { if (inQ && row[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
-          else if (char === ',' && !inQ) { out.push(cur.trim()); cur = ''; } // Fixed 'char' to 'c' typo
           else if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; }
           else cur += c;
         }
@@ -514,23 +537,15 @@
       });
     }
 
-    // Correzione manuale parseCSV (rimosso il duplicato sopra)
-    function parseCSV(csv) {
-      return csv.split(/\r?\n/).filter(r => r !== "").map(row => {
-        const out = []; let cur = '', inQ = false;
-        for (let i = 0; i < row.length; i++) {
-          let c = row[i];
-          if (c === '"') { if (inQ && row[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
-          else if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; }
-          else cur += c;
-        }
-        out.push(cur.trim()); return out;
-      });
+    function tornaAlMenu() { 
+      // Nasconde sempre il gioco prima di tornare indietro per evitare sovrapposizioni
+      document.getElementById('game-screen').style.display = 'none';
+      if (currentMateria) renderMenu(currentMateria); else renderCategories(); 
     }
-
-    function tornaAlMenu() { if (currentMateria) renderMenu(currentMateria); else renderCategories(); }
+    
     function resetGame() { if (confirm("Reset?")) { localStorage.clear(); location.reload(); } }
     function resetTutto() { if (confirm(LANG==='it'?"Cancellare tutto?":"Clear all?")) { localStorage.clear(); location.reload(); } }
+    
     window.onload = init;
   </script>
 </body>
