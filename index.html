@@ -35,85 +35,43 @@
       display: flex; flex-direction: column; min-height: 100vh;
       overflow-x: hidden;
     }
-/* Griglia che ospita le materie */
-/* Griglia ottimizzata per PC, Tablet e Mobile */
-/* --- REGOLA GENERALE (PC e Tablet) --- */
-/* Card della materia: FORZA la forma a sasso/blob */
+/* Griglia delle materie: si adatta a PC (orizzontale) e Mobile (verticale) */
+#category-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* La card asimmetrica: FORZA la forma a sasso/blob */
 .category-card {
-  /* 1. Dimensioni fisse per evitare rettangoli deformi */
   width: 220px;
   height: 220px;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1; /* Garantisce che sia un cerchio/blob e non un rettangolo */
   
-  /* 2. Ripristino forma asimmetrica a "pietra" */
+  /* border-radius complesso: crea la forma organica di una pietra */
   border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   
-  /* 3. Ombra più profonda per dare tridimensionalità */
-  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-  
-  /* 4. Allineamento contenuto */
+  background-color: var(--c-oro);
+  color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
   cursor: pointer;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
-  /* 5. Miglioramento Leggibilità */
-  color: white;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   text-align: center;
-  border: none;
-  overflow: hidden; /* Evita che il testo esca dai bordi della pietra */
 }
 
-/* Alternanza della forma per non renderle tutte uguali (effetto pietre naturali) */
-.category-card:nth-child(even) {
-  border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
-}
-
-/* Effetto Hover migliorato */
+/* Effetto al passaggio del mouse: la pietra si muove e cambia forma */
 .category-card:hover {
-  transform: scale(1.08) rotate(-2deg);
-  box-shadow: 0 18px 36px rgba(0,0,0,0.2);
-}
-
-/* STILE TESTO DENTRO I BLOB */
-.category-card h2 {
-  font-family: 'Cinzel', serif;
-  font-size: 1.3rem;
-  margin: 0;
-  line-height: 1.1;
-  /* Contorno sfumato per leggere bene su qualsiasi colore */
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5); 
-  text-transform: uppercase;
-}
-
-.category-card span {
-  font-size: 0.8rem;
-  margin-top: 10px;
-  font-weight: 700;
-  background: rgba(0,0,0,0.2); /* Etichetta semitrasparente per leggere i numeri */
-  padding: 4px 10px;
-  border-radius: 20px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-
-/* FIX PER MOBILE: ridimensioniamo la pietra mantenendo la forma */
-@media (max-width: 480px) {
-  .category-card {
-    width: 180px;
-    height: 180px;
-  }
-  .category-card h2 {
-    font-size: 1.1rem;
-  }
-}
-/* Animazione al passaggio del mouse */
-.category-card:hover {
-  transform: scale(1.05) rotate(2deg);
+  transform: scale(1.05) rotate(3deg);
   border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
 }
 
 .category-card h2 {
@@ -121,13 +79,24 @@
   font-size: 1.3rem;
   margin: 0;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-transform: uppercase;
 }
 
 .category-card span {
-  font-size: 0.85rem;
-  opacity: 0.9;
+  font-size: 0.8rem;
   margin-top: 10px;
-  font-weight: 600;
+  background: rgba(0,0,0,0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+/* Ottimizzazione Mobile: riduciamo la dimensione della pietra */
+@media (max-width: 480px) {
+  .category-card {
+    width: 180px;
+    height: 180px;
+  }
 }
     /* BARRA PUNTEGGIO */
     #stars-bar {
@@ -405,17 +374,21 @@
     <span>⭐</span>
     <span id="stars-count">0</span>
   </div>
-/* Inserimento categorie */
-  <div id="category-screen" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto;">
+  /* modifica multi materia 1*/
+<div id="category-screen" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto;">
   <div class="logo-area">
     <h1>Didattica Hub</h1>
     <div id="brand-cat"></div> </div>
   <h2 style="text-align:center; font-family:'Cinzel'; color:var(--c-testo); margin-bottom:30px;">Seleziona Materia</h2>
   
-  <div id="category-list"></div>
+  <div id="category-list">
+     <div class="category-card" style="background-color: var(--c-oro);">
+        <h2>Esempio</h2>
+        <span>3 SFIDE</span>
+     </div>
+  </div>
 </div>
-/* Inserimento categorie modifica 1*/
-  
+    /*fine  modifica multi materia 1*/
   <div id="menu-screen">
     <div class="logo-area">
       <h1>Didattica Hub</h1>
