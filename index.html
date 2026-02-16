@@ -143,6 +143,39 @@
       .btn-ans{ padding: 11px; font-size: 0.95rem; }
       .header h1 { font-size: 0.7rem !important; }
     }
+.lang-toggle{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:12px;
+  position: sticky;
+  top: 10px;
+  z-index: 1500;
+}
+
+.lang-btn{
+  border: 2px solid var(--c-oro);
+  background: #fff;
+  color: var(--c-testo);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  min-width: 160px;
+}
+
+.lang-btn.active{
+  background: var(--c-oro);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.14);
+}
+
+
+
+
+    
   </style>
 </head>
 
@@ -172,6 +205,11 @@
       <button class="btn-ans no-print" style="background:#7f8c8d; max-width:180px; margin:30px auto;" onclick="resetTutto()">RESET GLOBALE</button>
     </div>
   </div>
+  <div class="no-print lang-toggle">
+  <button id="btn-lang-it" class="lang-btn" onclick="setLang('it')">🇮🇹 Italiano</button>
+  <button id="btn-lang-en" class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+</div>
+
 
   <div id="game-screen">
     <div class="header no-print">
@@ -236,7 +274,82 @@
 
   <script>
     const URL_INDICE_SFIDE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRo9ZeS6loicyVFU04pA29n5GxEeg3q7teyh2-Tsd4DUPzwjNyQsPE4OBwG7WF14rSdxbPeTn594i1D/pub?gid=892603852&single=true&output=csv";
+/* === MULTILINGUA === */
+let LANG = localStorage.getItem("lang") || "it"; // default IT
 
+const I18N = {
+  it: {
+    loadingChallenges: "Caricamento...",
+    indexError: "Errore indice.",
+    back: "Indietro",
+    reset: "Reset",
+    resetAll: "RESET GLOBALE",
+    loadingChallengeError: "Errore caricamento sfida.",
+    questionLabel: "Domanda",
+    correct: "✨ Corretto!",
+    wrong: "❌ Errato!",
+    attempt: "Tentativo",
+    continue: "PROSEGUI",
+    reportTitle: "Report Finale",
+    finalStars: "Stelle Finali",
+    reportQ: "Domanda",
+    reportA: "Risposta corretta",
+    reportT: "Tentativi",
+    print: "🖨️ STAMPA REPORT",
+    home: "🏠 HOME",
+    progressDone: "completati",
+    askName: "Inserisci il tuo nome e cognome",
+    student: "Studente",
+    datetime: "Data e ora"
+  },
+  en: {
+    loadingChallenges: "Loading...",
+    indexError: "Index error.",
+    back: "Back",
+    reset: "Reset",
+    resetAll: "RESET ALL",
+    loadingChallengeError: "Error loading challenge.",
+    questionLabel: "Question",
+    correct: "✨ Correct!",
+    wrong: "❌ Wrong!",
+    attempt: "Attempt",
+    continue: "CONTINUE",
+    reportTitle: "Final Report",
+    finalStars: "Final Stars",
+    reportQ: "Question",
+    reportA: "Correct Answer",
+    reportT: "Attempts",
+    print: "🖨️ PRINT REPORT",
+    home: "🏠 HOME",
+    progressDone: "completed",
+    askName: "Enter your name",
+    student: "Student",
+    datetime: "Date & time"
+  }
+};
+
+function t(key){
+  return I18N[LANG]?.[key] || I18N.it[key] || key;
+}
+
+function updateLangUI(){
+  const bIt = document.getElementById("btn-lang-it");
+  const bEn = document.getElementById("btn-lang-en");
+  if (!bIt || !bEn) return;
+  bIt.classList.toggle("active", LANG === "it");
+  bEn.classList.toggle("active", LANG === "en");
+}
+
+function setLang(l){
+  LANG = l;
+  localStorage.setItem("lang", LANG);
+  updateLangUI();
+  renderMenu(); // ridisegna il menu (e le materie, se hai filtro)
+}
+
+
+
+    
     let SFIDE_CARICATE = [];
     let SFIDE_PER_MATERIA = {};
     let currentSfida = null;
