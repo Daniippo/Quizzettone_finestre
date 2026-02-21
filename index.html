@@ -8,10 +8,6 @@
   <meta name="author" content="Daniela Ippolito (@matefacile)">
   <meta name="copyright" content="© Daniela Ippolito (@matefacile)">
 
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#bfa100">
-  <link rel="apple-touch-icon" href="icon-512.png">
-
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <script>
@@ -38,9 +34,9 @@
     }
 
     /* Schermate */
-    #category-screen, #menu-screen, #game-screen, #report-area { display: none; width: 100%; }
+    #category-screen { display: block; width: 100%; }
+    #menu-screen, #game-screen, #report-area { display: none; width: 100%; }
 
-    /* Schermata Iniziale - Pietre Materie */
     #category-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -50,6 +46,7 @@
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
+      padding: 20px;
     }
 
     .category-card {
@@ -59,59 +56,70 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 20px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center;
+      position: relative;
     }
 
-    .category-card:hover {
-      transform: scale(1.05) rotate(3deg);
-      border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    .category-card:hover { transform: scale(1.05) rotate(3deg); border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%; }
+
+    .badge-new {
+      position: absolute; top: 15px; right: 15px; background: var(--c-errore); color: white;
+      padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: pulseNew 2s infinite; z-index: 5;
+    }
+
+    .sfida-badge-new {
+      display: inline-block; background: var(--c-errore); color: white; font-size: 0.65rem;
+      padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle;
+      text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px;
+    }
+
+    @keyframes pulseNew {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); box-shadow: 0 0 15px var(--c-errore); }
+      100% { transform: scale(1); }
     }
 
     .category-card h2 { font-family: 'Cinzel', serif; font-size: 1.2rem; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3); text-transform: uppercase; }
     .category-card span { font-size: 0.8rem; margin-top: 10px; background: rgba(0,0,0,0.15); padding: 4px 12px; border-radius: 20px; font-weight: bold; }
 
-    /* Selettore Lingua */
-    .lang-toggle { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
+    .lang-toggle { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; padding-top: 20px; }
     .lang-btn {
       border: 2px solid var(--c-oro); background: white; color: var(--c-testo);
       padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s;
     }
     .lang-btn.active { background: var(--c-oro); color: white; }
 
-    /* Menu Sfide - Altezza dinamica e allineamento in alto */
-    #sfide-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
+    #sfide-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; padding: 0 20px; }
+    
     .sfida-card { 
-      background: white; 
-      padding: 18px; 
-      border-radius: 12px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
-      cursor: pointer; 
-      border-top: 6px solid var(--c-oro); 
-      transition: 0.2s; 
-      min-height: 160px; 
-      height: auto; 
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      text-align: left; 
+      background: white; padding: 18px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      cursor: pointer; border-top: 6px solid var(--c-oro); transition: 0.2s; 
+      min-height: 160px; height: auto; display: flex; flex-direction: column; justify-content: flex-start; text-align: left; 
+      position: relative;
     }
+    
+    .sfida-card.is-new {
+        box-shadow: 0 0 15px rgba(231, 76, 60, 0.2);
+        animation: glowNew 3s infinite ease-in-out;
+    }
+
+    @keyframes glowNew {
+        0% { border-color: var(--c-oro); }
+        50% { border-color: var(--c-errore); box-shadow: 0 0 20px rgba(231, 76, 60, 0.3); }
+        100% { border-color: var(--c-oro); }
+    }
+
     .sfida-card:hover { transform: translateY(-4px); }
-    .sfida-card h2 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--c-testo); line-height: 1.3; }
+    .sfida-card h2 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--c-testo); line-height: 1.3; display: flex; align-items: center; flex-wrap: wrap; }
     .sfida-card p { margin: 0; font-size: 0.85rem; color: #666; line-height: 1.4; }
 
-    /* Header di Gioco */
-    .header { 
-      padding: 10px; border-bottom: 3px solid var(--c-oro); background: white; 
-      position: sticky; top: 0; z-index: 1000; 
-      display: grid; grid-template-columns: 1fr 1.5fr 1fr; align-items: center; 
-    }
+    .header { padding: 10px; border-bottom: 3px solid var(--c-oro); background: white; position: sticky; top: 0; z-index: 1000; display: grid; grid-template-columns: 1fr 1.5fr 1fr; align-items: center; }
     .back-btn { background: none; border: none; font-size: 1.5rem; color: var(--c-oro); cursor: pointer; }
 
-    /* Percorso Avatar */
-    .vertical-track { position: relative; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+    .vertical-track { position: relative; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
     .node-container { width: 100%; position: relative; z-index: 2; display: flex; margin: 18px 0; justify-content: center; }
 
-    /* Zig Zag Nodes */
+    /* Zig Zag Rendering */
     .node-container:nth-child(8n+1) { transform: translateX(-110px); }
     .node-container:nth-child(8n+2) { transform: translateX(-60px); }
     .node-container:nth-child(8n+3) { transform: translateX(60px); }
@@ -124,129 +132,114 @@
     .node { width: 55px; height: 55px; border-radius: 50%; background: white; border: 4px solid var(--c-oro); display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; box-shadow: 0 4px 0 #ddd; transition: 0.2s; }
     .node.done { background: var(--c-accento); color: white; border-color: #1e8449; box-shadow: 0 4px 0 #1e8449; }
     .node.future { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
-    .avatar { position: absolute; font-size: 38px; z-index: 10; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; top: 0; left: 0; }
+    
+    .avatar { position: absolute; font-size: 38px; z-index: 10; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
 
-    /* Modali Quiz e Prompt */
     #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 15px; }
     #modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; }
     .btn-ans { background: var(--c-oro); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 10px auto; width: 100%; display: block; font-size: 1rem; }
-    .input-custom { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
 
-    /* Report Area */
     #report-area { padding: 20px; background: white; text-align: center; }
     .report-table-container { overflow-x: auto; margin-top: 20px; }
     table { width: 100%; border-collapse: collapse; min-width: 600px; }
     th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: top; }
     th { background: var(--c-oro); color: white; }
-    .theory-text { font-size: 0.85rem; color: #555; font-style: italic; display: block; margin-top: 5px; border-top: 1px solid #eee; padding-top: 5px; }
 
-    /* Brand */
-    .brand { display: flex; align-items: center; gap: 10px; color: #666; font-size: 0.82rem; }
-    .brand img { width: 28px; height: 28px; object-fit: contain; border-radius: 6px; }
-    .brand-home { justify-content: center; margin-top: 10px; }
-    .brand-report { justify-content: center; margin: 8px 0 18px 0; }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 10px; color: #666; font-size: 0.82rem; margin-top: 10px; }
+
+    #loading-msg { text-align: center; padding: 50px; font-weight: bold; color: var(--c-oro); }
+
+    .flying-star { pointer-events: none; font-size: 24px; position: fixed; z-index: 9999; }
+    .exploding-poop { pointer-events: none; font-size: 32px; position: fixed; z-index: 9999; }
+
+    /* Stili per le sezioni della risposta nel report */
+    .report-ok-bold { font-weight: bold; color: var(--c-testo); display: block; margin-bottom: 4px; }
+    .report-extra-red { color: var(--c-errore); font-weight: 600; display: block; margin-bottom: 8px; }
+    .report-theory-italic { font-size: 0.9rem; color: #555; font-style: italic; display: block; }
+    .report-sep { border: 0; border-top: 1px solid #eee; margin: 8px 0; }
 
     @media (max-width: 480px) {
       .category-card { width: 180px; height: 180px; }
       #category-list { grid-template-columns: 1fr; }
-      .header h1 { font-size: 0.7rem !important; }
+      .node-container:nth-child(8n+1) { transform: translateX(-60px); }
+      .node-container:nth-child(8n+2) { transform: translateX(-30px); }
+      .node-container:nth-child(8n+3) { transform: translateX(30px); }
+      .node-container:nth-child(8n+4) { transform: translateX(60px); }
+      .node-container:nth-child(8n+5) { transform: translateX(60px); }
+      .node-container:nth-child(8n+6) { transform: translateX(30px); }
+      .node-container:nth-child(8n+7) { transform: translateX(-30px); }
+      .node-container:nth-child(8n+8) { transform: translateX(-60px); }
     }
 
+    /* Ottimizzazione Stampa */
     @media print {
       .no-print { display: none !important; }
-      #report-area { display: block !important; width: 100%; }
-      body { background: white; }
+      #report-area { display: block !important; width: 100%; position: absolute; top: 0; left: 0; }
+      body, html { background: white !important; height: auto !important; overflow: visible !important; display: block !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- SCHERMATA MATERIE -->
-  <div id="category-screen" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto; display: block;">
+  <div id="category-screen">
     <div class="lang-toggle no-print">
       <button id="btn-lang-it" class="lang-btn" onclick="setLang('it')">🇮🇹 Italiano</button>
       <button id="btn-lang-en" class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
     </div>
-    <div class="logo-area">
-      <h1 id="ui-main-title">Didattica Hub</h1>
-      <div id="brand-cat"></div> 
-    </div>
-    <h2 id="ui-select-subject" style="text-align:center; font-family:'Cinzel'; color:var(--c-testo); margin-bottom:30px;">Seleziona Materia</h2>
+    <h1 style="text-align:center; font-family:'Cinzel'; margin-bottom: 5px;">Didattica Hub</h1>
+    <div id="brand-cat" class="brand"></div>
+    
+    <div id="loading-msg">Caricamento sfide in corso...</div>
+
+    <h2 id="ui-select-subject" style="text-align:center; font-family:'Cinzel'; margin-top:30px; display:none;">Seleziona Materia</h2>
     <div id="category-list"></div>
   </div>
 
-  <!-- SCHERMATA MENU SFIDE -->
   <div id="menu-screen">
-    <div class="logo-area">
-      <h1 id="ui-menu-title">Didattica Hub</h1>
-      <div id="brand-home"></div>
-    </div>
-    <div id="sfide-list" style="padding: 0 20px; max-width: 1200px; margin: 0 auto;"></div>
-    
+    <h1 style="text-align:center; font-family:'Cinzel'; padding-top:20px;">Scegli la Sfida</h1>
+    <div id="brand-home" class="brand"></div>
+    <div id="sfide-list"></div>
     <div class="no-print" style="display: flex; justify-content: center; gap: 15px; margin: 40px auto; max-width: 500px; padding: 0 20px;">
       <button id="ui-back-to-subjects" class="btn-ans" style="background: var(--c-azzurro); flex: 1; margin: 0;" onclick="currentMateria = null; renderCategories();">❮ TORNA</button>
-      <button id="ui-reset-all" class="btn-ans" style="background: #7f8c8d; flex: 1; margin: 0;" onclick="openConfirmModal('resetTutto')">RESET GLOBALE</button>
+      <button id="ui-reset-all" class="btn-ans" style="background: #7f8c8d; flex: 1; margin: 0;" onclick="resetTutto()">RESET GLOBALE</button>
     </div>
   </div>
 
-  <!-- SCHERMATA GIOCO -->
   <div id="game-screen">
     <div class="header no-print">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <button class="back-btn" onclick="tornaAlMenu()">❮</button>
-        <img src="logo2matefacile.png" alt="Logo" style="width: 35px; height: 35px; object-fit: contain;">
-      </div>
+      <button class="back-btn" onclick="tornaAlMenu()">❮</button>
       <div style="text-align: center;">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; color: var(--c-oro); font-weight: bold; font-size: 1.2rem;">
-          <span>⭐</span><span id="stars-count-header">0</span>
-        </div>
-        <h1 id="topic-title" style="font-family:'Cinzel'; font-size: 0.8rem; margin: 0; color: #666; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</h1>
+        <div style="color: var(--c-oro); font-weight: bold;">⭐ <span id="stars-count-header">0</span></div>
+        <h1 id="topic-title" style="font-family:'Cinzel'; font-size: 0.8rem; margin: 0; color: #666;">...</h1>
       </div>
-      <div style="text-align: right;">
-        <button class="back-btn" onclick="openConfirmModal('resetGame')">🔄</button>
-      </div>
+      <button class="back-btn" onclick="resetGame()">🔄</button>
     </div>
-
-    <div id="main-game-area">
-      <div class="vertical-track">
-        <div id="achilles" class="avatar">🏃‍♂️</div>
-        <div id="tortoise" class="avatar">🐢</div>
-        <div id="nodes-container" style="width:100%"></div>
-      </div>
+    <div class="vertical-track">
+      <div id="achilles" class="avatar">🏃‍♂️</div>
+      <div id="tortoise" class="avatar">🐢</div>
+      <div id="nodes-container" style="width:100%"></div>
     </div>
   </div>
 
-  <!-- SCHERMATA REPORT -->
   <div id="report-area">
     <h1 id="ui-report-title" style="font-family:'Cinzel'; color: var(--c-oro);">Report Finale</h1>
-    <div id="brand-report"></div>
+    <div id="brand-report" class="brand"></div>
     <div id="student-info-box"></div>
     <h2 id="ui-final-stars-label">Stelle Totali: 0</h2>
     <div class="report-table-container">
       <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th id="th-q">Domanda</th>
-            <th id="th-a">Risposta Corretta</th>
-            <th id="th-t">Tentativi</th>
-          </tr>
-        </thead>
+        <thead><tr><th>#</th><th id="th-q">Domanda</th><th id="th-a">Risposta</th><th id="th-t">Tentativi</th></tr></thead>
         <tbody id="report-body"></tbody>
       </table>
     </div>
     <div class="no-print" style="margin-top: 25px;">
-      <button id="ui-print-btn" class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px;" onclick="window.print()">🖨️ STAMPA REPORT</button>
-      <button id="ui-home-btn" class="btn-ans" style="display:inline-block; width:auto; background:#7f8c8d; padding: 10px 30px;" onclick="tornaAlMenu()">🏠 HOME</button>
+      <button id="ui-print-btn" class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px;" onclick="stampaReport()">🖨️ STAMPA</button>
+      <button id="ui-home-btn" class="btn-ans" style="width:auto; display:inline-block; background:#7f8c8d; padding: 10px 30px;" onclick="tornaAlMenu()">🏠 HOME</button>
     </div>
   </div>
 
-  <!-- MODALE UNIFICATO -->
   <div id="modal-overlay">
-    <div id="modal-content">
-      <div id="modal-body"></div>
-      <div id="feedback-msg" style="margin-top: 10px; font-weight: bold;"></div>
-    </div>
+    <div id="modal-content"><div id="modal-body"></div><div id="feedback-msg" style="margin-top:10px; font-weight:bold;"></div></div>
   </div>
 
   <audio id="snd-ok" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
@@ -254,46 +247,21 @@
 
   <script>
     const URL_INDICE_SFIDE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRo9ZeS6loicyVFU04pA29n5GxEeg3q7teyh2-Tsd4DUPzwjNyQsPE4OBwG7WF14rSdxbPeTn594i1D/pub?gid=892603852&single=true&output=csv";
-
-    const BRAND = {
-      name: "Daniela Ippolito", handle: "@matefacile", logo: "logo2matefacile.png", year: new Date().getFullYear()
-    };
-
+    const BRAND = { name: "Daniela Ippolito", handle: "@matefacile", year: new Date().getFullYear() };
+    
     let LANG = localStorage.getItem("lang") || "it";
     const I18N = {
-      it: {
-        selectSubject: "Seleziona Materia", resetAll: "RESET GLOBALE", backToSubjects: "❮ TORNA",
-        challenges: "SFIDE", completed: "completati", correct: "✨ Corretto!", wrong: "❌ Errato!", 
-        attempt: "Tentativo", continue: "PROSEGUI", reportTitle: "Report Finale", finalStars: "Stelle Totali",
-        thQ: "Domanda", thA: "Risposta Corretta", thT: "Tentativi", print: "🖨️ STAMPA REPORT", home: "🏠 HOME",
-        promptName: "Sfida completata! Inserisci il tuo nome per il report:", studentLabel: "ALUNNO",
-        dateLabel: "Data", createdLabel: "Creato da", challengeLabel: "Sfida", confirmReset: "Sei sicuro di voler cancellare i progressi?",
-        yes: "SI", no: "NO", ok: "OK"
-      },
-      en: {
-        selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK",
-        challenges: "CHALLENGES", completed: "completed", correct: "✨ Correct!", wrong: "❌ Wrong!", 
-        attempt: "Attempt", continue: "CONTINUE", reportTitle: "Final Report", finalStars: "Total Stars",
-        thQ: "Question", thA: "Correct Answer", thT: "Attempts", print: "🖨️ PRINT REPORT", home: "🏠 HOME",
-        promptName: "Challenge completed! Enter your name for the report:", studentLabel: "STUDENT",
-        dateLabel: "Date", createdLabel: "Created by", challengeLabel: "Challenge", confirmReset: "Are you sure you want to clear your progress?",
-        yes: "YES", no: "NO", ok: "OK"
-      }
+      it: { selectSubject: "Seleziona Materia", resetAll: "RESET GLOBALE", backToSubjects: "❮ TORNA", correct: "✨ Corretto!", wrong: "❌ Errato!", continue: "PROSEGUI", reportTitle: "Report Finale", finalStars: "Stelle Totali", thQ: "Domanda", thA: "Risposta", thT: "Tentativi", print: "🖨️ STAMPA", home: "🏠 HOME", studentLabel: "ALUNNO", challengeLabel: "Sfida", dateLabel: "Data", challenges: "SFIDE", promptName: "Sfida completata! Inserisci il tuo nome per il report:" },
+      en: { selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK", correct: "✨ Correct!", wrong: "❌ Wrong!", continue: "CONTINUE", reportTitle: "Final Report", finalStars: "Total Stars", thQ: "Question", thA: "Response", thT: "Attempts", print: "🖨️ PRINT", home: "🏠 HOME", studentLabel: "STUDENT", challengeLabel: "Challenge", dateLabel: "Date", challenges: "CHALLENGES", promptName: "Challenge completed! Enter your name for the report:" }
     };
 
-    let SFIDE_CARICATE = [];
-    let SFIDE_PER_MATERIA = {};
-    let currentSfida = null, currentMateria = null;
-    let adventData = [], TOTAL_LEVELS = 0, stars = 0;
+    let SFIDE_CARICATE = [], SFIDE_PER_MATERIA = {}, currentSfida = null, currentMateria = null, adventData = [], TOTAL_LEVELS = 0, stars = 0, currentScreen = 'category';
 
     function t(key) { return I18N[LANG][key]; }
 
-    function setLang(l) {
-      LANG = l; localStorage.setItem("lang", LANG);
-      updateUI();
-      if (currentSfida && document.getElementById('game-screen').style.display === 'block') {
-          caricaSfida(currentSfida);
-      }
+    function setLang(l) { 
+        LANG = l; localStorage.setItem("lang", LANG); 
+        organizzaSfide(); updateUI(); 
     }
 
     function updateUI() {
@@ -308,283 +276,252 @@
       document.getElementById("th-t").innerText = t("thT");
       document.getElementById("ui-print-btn").innerText = t("print");
       document.getElementById("ui-home-btn").innerText = t("home");
-      
-      if (document.getElementById('category-screen').style.display === 'block') renderCategories();
-      if (document.getElementById('menu-screen').style.display === 'block' && currentMateria) renderMenu(currentMateria);
+      if (document.getElementById('category-screen').offsetParent !== null) renderCategories();
     }
 
-    function renderBrand(targetId, variant) {
-      const el = document.getElementById(targetId);
-      if (!el) return;
-      const label = variant === 'report' ? t("createdLabel") : "Creato da";
-      el.innerHTML = `<div class="brand ${variant === "home" ? "brand-home" : "brand-report"}">
-        <img src="${BRAND.logo}" alt="Matefacile">
-        <div class="brand-text">${label} <strong>${BRAND.name}</strong> · ${BRAND.handle} · © ${BRAND.year}</div>
-      </div>`;
+    function renderBrand(targetId) {
+      const el = document.getElementById(targetId); if (!el) return;
+      el.innerHTML = `Creato da <strong>${BRAND.name}</strong> · ${BRAND.handle} · © ${BRAND.year}`;
     }
 
     async function init() {
-      renderBrand("brand-cat", "home");
-      renderBrand("brand-home", "home");
+      renderBrand("brand-cat"); renderBrand("brand-home");
       try {
         const resp = await fetch(URL_INDICE_SFIDE);
-        const rows = parseCSV(await resp.text());
+        const csvText = await resp.text();
+        const rows = parseCSV(csvText);
         SFIDE_CARICATE = rows.slice(1).map(r => ({
-          id: r[0], 
-          titolo: r[1], titoloEN: r[5] || r[1],
-          desc: r[2], descEN: r[6] || r[2],
-          url_it: r[3],
-          url_en: r[7] || r[3],
-          coloreSfida: r[4] || "#bfa100",
-          materia: (r[11] || "Altro").trim(), 
-          materiaEN: (r[14] || r[11]).trim(),
-          coloreMateria: r[12] || "#bfa100",
-          ordineMateria: parseInt(r[13]) || 99
+          id: r[0], titolo: r[1], titoloEN: r[5] || r[1], desc: r[2], descEN: r[6] || r[2],
+          url_it: r[3], url_en: r[7] || r[3], coloreSfida: r[4] || "#bfa100",
+          materia: (r[11] || "Altro").trim(), materiaEN: (r[14] || r[11]).trim(),
+          coloreMateria: r[12] || "#bfa100", ordineMateria: parseInt(r[13]) || 99,
+          isNew: (r[15] || "").trim().toUpperCase() === "NEW"
         }));
-        updateUI();
-      } catch (e) { document.getElementById('category-list').innerText = "Errore caricamento."; }
+        document.getElementById('loading-msg').style.display = 'none';
+        document.getElementById('ui-select-subject').style.display = 'block';
+        organizzaSfide(); updateUI();
+      } catch (e) { document.getElementById('loading-msg').innerText = "Errore caricamento sfide."; }
     }
 
     function organizzaSfide() {
-        SFIDE_PER_MATERIA = SFIDE_CARICATE.reduce((acc, s) => {
-          const mKey = LANG === 'it' ? s.materia : s.materiaEN;
-          if (!acc[mKey]) acc[mKey] = { sfide: [], colore: s.coloreMateria, ordine: s.ordineMateria };
-          acc[mKey].sfide.push(s);
-          return acc;
-        }, {});
+      SFIDE_PER_MATERIA = SFIDE_CARICATE.reduce((acc, s) => {
+        const mKey = LANG === 'it' ? s.materia : s.materiaEN;
+        if (!acc[mKey]) acc[mKey] = { sfide: [], colore: s.coloreMateria, ordine: s.ordineMateria, hasNew: false };
+        acc[mKey].sfide.push(s);
+        if (s.isNew) acc[mKey].hasNew = true;
+        return acc;
+      }, {});
     }
 
     function renderCategories() {
-      organizzaSfide();
+      currentScreen = 'category';
       document.getElementById('category-screen').style.display = 'block';
       document.getElementById('menu-screen').style.display = 'none';
       document.getElementById('game-screen').style.display = 'none';
       document.getElementById('report-area').style.display = 'none';
-      
-      const list = document.getElementById('category-list');
-      list.innerHTML = '';
-      const sorted = Object.keys(SFIDE_PER_MATERIA).sort((a,b) => SFIDE_PER_MATERIA[a].ordine - SFIDE_PER_MATERIA[b].ordine);
-      sorted.forEach(m => {
+      const list = document.getElementById('category-list'); list.innerHTML = '';
+      const keys = Object.keys(SFIDE_PER_MATERIA).sort((a,b) => SFIDE_PER_MATERIA[a].ordine - SFIDE_PER_MATERIA[b].ordine);
+      keys.forEach(m => {
         const d = SFIDE_PER_MATERIA[m];
         const card = document.createElement('div');
         card.className = 'category-card'; card.style.backgroundColor = d.colore;
-        card.innerHTML = `<h2>${m.toUpperCase()}</h2><span>${d.sfide.length} ${t("challenges")}</span>`;
+        card.innerHTML = `${d.hasNew ? '<div class="badge-new">NEW</div>' : ''}<h2>${m.toUpperCase()}</h2><span>${d.sfide.length} ${t("challenges")}</span>`;
         card.onclick = () => renderMenu(m);
         list.appendChild(card);
       });
     }
 
     function renderMenu(m) {
-      currentMateria = m;
+      if (!m || !SFIDE_PER_MATERIA[m]) return renderCategories();
+      currentScreen = 'menu'; currentMateria = m;
       document.getElementById('category-screen').style.display = 'none';
       document.getElementById('menu-screen').style.display = 'block';
-      document.getElementById('game-screen').style.display = 'none';
-      document.getElementById('report-area').style.display = 'none';
-
-      const list = document.getElementById('sfide-list');
-      list.innerHTML = '';
-      const sfideFiltrate = SFIDE_PER_MATERIA[m].sfide;
-      sfideFiltrate.forEach(s => {
-        const card = document.createElement('div');
-        card.className = 'sfida-card'; card.style.borderTopColor = s.coloreSfida;
-        card.onclick = () => caricaSfida(s);
+      const list = document.getElementById('sfide-list'); list.innerHTML = '';
+      SFIDE_PER_MATERIA[m].sfide.forEach(s => {
+        const card = document.createElement('div'); card.className = 'sfida-card'; if(s.isNew) card.classList.add('is-new');
+        card.style.borderTopColor = s.coloreSfida; card.onclick = () => caricaSfida(s);
         const tStr = LANG === 'it' ? s.titolo : s.titoloEN;
         const dStr = LANG === 'it' ? s.desc : s.descEN;
-        card.innerHTML = `<h2 style="color:${s.coloreSfida}">${tStr}</h2><p>${dStr}</p>`;
+        const newBadge = s.isNew ? '<span class="sfida-badge-new">NEW</span>' : '';
+        card.innerHTML = `<h2 style="color:${s.coloreSfida}">${tStr} ${newBadge}</h2><p>${dStr}</p>`;
         list.appendChild(card);
       });
     }
 
     async function caricaSfida(s) {
-      currentSfida = s;
+      currentSfida = s; currentScreen = 'game'; 
       stars = parseInt(localStorage.getItem('stars_' + s.id)) || 0;
-      
       document.getElementById('menu-screen').style.display = 'none';
       document.getElementById('game-screen').style.display = 'block';
-      document.getElementById('report-area').style.display = 'none';
-      
       document.getElementById('topic-title').innerText = LANG === 'it' ? s.titolo : s.titoloEN;
       aggiornaStelleVisive();
-      
       try {
         const targetUrl = LANG === 'it' ? s.url_it : s.url_en;
         const resp = await fetch(targetUrl);
         const rows = parseCSV(await resp.text());
         TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
-        
-        const qIdx = 1;  
-        const aIdx = 10; 
-        const eIdx = 12; 
-
         adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => ({
           day: i + 1, 
-          question: v[qIdx] || v[1], 
-          checkAnswer: v[2], 
-          answerOK: v[aIdx] || v[10],
-          options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o), 
-          spiegazione: v[eIdx] || v[12]
+          question: v[1],      // B: Domanda
+          checkAnswer: v[2],   // C: Risp_corr
+          answerOK: v[10],     // K: RispostaOK
+          extra: v[11],        // L: Colonna L (Richiesta utente)
+          spiegazione: v[12],  // M: Teoria
+          options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o)
         }));
         render();
       } catch (e) { tornaAlMenu(); }
     }
 
     function render() {
-      const container = document.getElementById('nodes-container');
-      container.innerHTML = '';
+      const container = document.getElementById('nodes-container'); container.innerHTML = '';
       let solved = 0;
-      adventData.forEach((d, i) => {
+      adventData.forEach((d) => {
         const isDone = localStorage.getItem('day_' + currentSfida.id + '_' + d.day) === 'correct';
         if (isDone) solved++;
         const isFuture = (d.day > 1 && localStorage.getItem('day_' + currentSfida.id + '_' + (d.day - 1)) !== 'correct');
-        const wrap = document.createElement('div');
-        wrap.className = 'node-container';
+        const wrap = document.createElement('div'); wrap.className = 'node-container';
         wrap.innerHTML = `<div id="node-${d.day}" class="node ${isDone ? 'done' : (isFuture ? 'future' : '')}" onclick="${isFuture ? '' : 'openQuiz('+d.day+')'}">${isDone ? '✔' : d.day}</div>`;
         container.appendChild(wrap);
       });
       muoviPersonaggi(solved);
       if (window.MathJax) MathJax.typeset();
-      if (solved === TOTAL_LEVELS && TOTAL_LEVELS > 0) setTimeout(showReport, 1200);
+      if (solved === TOTAL_LEVELS && TOTAL_LEVELS > 0) setTimeout(showReport, 1000);
     }
 
     function muoviPersonaggi(s) {
       setTimeout(() => {
+        const trackEl = document.querySelector('.vertical-track');
+        if (!trackEl) return;
+        const track = trackEl.getBoundingClientRect();
         const aN = document.getElementById('node-' + Math.min(s + 1, TOTAL_LEVELS));
         const tN = document.getElementById('node-' + Math.min(s + 2, TOTAL_LEVELS));
-        const track = document.querySelector('.vertical-track');
-        if (aN && track) moveAvatar('achilles', aN, track.getBoundingClientRect());
-        if (tN && track) moveAvatar('tortoise', tN, track.getBoundingClientRect());
+        if (aN) moveAvatar('achilles', aN, track);
+        if (tN) moveAvatar('tortoise', tN, track);
       }, 150);
     }
 
     function moveAvatar(id, node, trackRect) {
-      const av = document.getElementById(id);
-      if (!av || !node) return;
-      const nr = node.getBoundingClientRect();
+      const av = document.getElementById(id), nr = node.getBoundingClientRect();
       const x = (nr.left - trackRect.left) + (nr.width / 2) - (av.offsetWidth / 2);
       const y = (nr.top - trackRect.top) - av.offsetHeight + 10;
       av.style.transform = `translate(${x}px, ${y}px)`;
     }
 
-    /* SISTEMA MODALI */
-    function openModal(htmlContent) {
-      document.getElementById('modal-body').innerHTML = htmlContent;
-      document.getElementById('feedback-msg').innerText = "";
-      document.getElementById('modal-overlay').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('modal-overlay').style.display = 'none';
-    }
-
     function openQuiz(day) {
-      const d = adventData[day - 1];
-      let h = `<h3>${t("thQ")} ${day}</h3><p class="quiz-question">${d.question}</p>`;
+      const d = adventData[day - 1]; const cont = document.getElementById('modal-body');
+      document.getElementById('feedback-msg').innerText = "";
+      let h = `<h3>${t("thQ")} ${day}</h3><p>${d.question}</p>`;
       if (d.options.length > 0) {
-        d.options.forEach((o, i) => { 
-          h += `<button class="btn-ans" style="background:#fff; color:#333; border:2px solid #eee;" onclick="check(${day}, '${String.fromCharCode(65+i)}', this)">${String.fromCharCode(65+i)}. ${o}</button>`; 
-        });
+        d.options.forEach((o, i) => { h += `<button class="btn-ans" style="background:#fff; color:#333; border:2px solid #eee;" onclick="check(${day}, '${String.fromCharCode(65+i)}', this)">${String.fromCharCode(65+i)}. ${o}</button>`; });
       } else {
-        h += `<input type="text" id="ans-input" class="input-custom"><button class="btn-ans" onclick="check(${day}, document.getElementById('ans-input').value, this)">${t("ok")}</button>`;
+        h += `<input type="text" id="ans-in" style="width:100%; padding:10px; margin-bottom:10px;"><button class="btn-ans" onclick="check(${day}, document.getElementById('ans-in').value, this)">OK</button>`;
       }
-      openModal(h);
+      cont.innerHTML = h; document.getElementById('modal-overlay').style.display = 'flex';
       if (window.MathJax) MathJax.typeset();
     }
 
     function check(day, val, btn) {
-      const d = adventData[day - 1];
-      const sId = currentSfida.id;
+      const d = adventData[day - 1]; const sId = currentSfida.id;
+      const isAlreadyDone = localStorage.getItem('day_' + sId + '_' + day) === 'correct';
       let att = (parseInt(localStorage.getItem('tent_' + sId + '_' + day)) || 0) + 1;
       localStorage.setItem('tent_' + sId + '_' + day, att);
       if (val.trim().toLowerCase() === d.checkAnswer.toLowerCase()) {
         document.getElementById('snd-ok').play().catch(() => {});
-        localStorage.setItem('day_' + sId + '_' + day, 'correct');
-        animateCorrectStar(btn);
+        if (!isAlreadyDone) {
+            localStorage.setItem('day_' + sId + '_' + day, 'correct');
+            animateCorrectStar(btn);
+            stars++;
+        }
         document.getElementById('modal-body').innerHTML = `<h2>${t("correct")}</h2><p>${d.spiegazione || ''}</p><button class="btn-ans" onclick="chiudiEProsegui()">${t("continue")}</button>`;
         if (window.MathJax) MathJax.typeset();
       } else {
         document.getElementById('snd-no').play().catch(() => {});
+        document.getElementById('feedback-msg').innerText = `${t("wrong")} Tentativo n. ${att}`;
         animatePoop(btn);
-        document.getElementById('feedback-msg').innerText = `${t("wrong")} ${t("attempt")} n. ${att}`;
+        if (!isAlreadyDone) stars--; 
+        aggiornaStelleVisive();
       }
     }
 
-    function openConfirmModal(action) {
-      let h = `<p style="font-size:1.1rem; margin-bottom:20px;">${t("confirmReset")}</p>
-               <div style="display:flex; gap:10px;">
-                 <button class="btn-ans" style="background:var(--c-errore);" onclick="executeAction('${action}')">${t("yes")}</button>
-                 <button class="btn-ans" style="background:#7f8c8d;" onclick="closeModal()">${t("no")}</button>
-               </div>`;
-      openModal(h);
+    function aggiornaStelleVisive() { 
+      const el = document.getElementById('stars-count-header');
+      if (el) el.innerText = stars; 
+      localStorage.setItem('stars_' + currentSfida.id, stars); 
+    }
+    
+    function chiudiEProsegui() { 
+      aggiornaStelleVisive(); document.getElementById('modal-overlay').style.display = 'none'; render(); 
     }
 
-    function executeAction(action) {
-      localStorage.clear();
-      location.reload();
-    }
-
-    /* GESTIONE REPORT E NOME */
     function showReport() {
-      let h = `<h3>${t("completed")}</h3><p>${t("promptName")}</p>
-               <input type="text" id="student-name-input" class="input-custom" placeholder="Nome Cognome">
-               <button class="btn-ans" onclick="generateFinalReport()">${t("continue")}</button>`;
-      openModal(h);
+      const cont = document.getElementById('modal-body');
+      cont.innerHTML = `<h3>${t("completed")}</h3><p>${t("promptName")}</p>
+                        <input type="text" id="report-name-input" style="width:100%; padding:12px; font-size:1.1rem; border:2px solid #ddd; border-radius:10px; margin-bottom:15px;" placeholder="Nome Cognome">
+                        <button class="btn-ans" onclick="generateFinalReport()">${t("continue")}</button>`;
+      document.getElementById('modal-overlay').style.display = 'flex';
     }
 
     function generateFinalReport() {
-      let nome = document.getElementById('student-name-input').value.trim();
-      if (nome === "") nome = LANG === 'it' ? "Studente" : "Student";
-      closeModal();
-
+      let nome = document.getElementById('report-name-input').value.trim();
+      if (!nome) nome = LANG === 'it' ? "Studente" : "Student";
+      document.getElementById('modal-overlay').style.display = 'none';
+      currentScreen = 'report';
       document.getElementById('game-screen').style.display = 'none';
       document.getElementById('report-area').style.display = 'block';
-      
-      const challengeTitle = LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN;
+      renderBrand("brand-report");
       const dt = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
-      
-      renderBrand("brand-report", "report");
-      const sBox = document.getElementById('student-info-box');
-      sBox.innerHTML = `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
+      const challengeTitle = LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN;
+      document.getElementById('student-info-box').innerHTML = `<div style="margin: 15px auto; padding: 15px; border: 2px solid var(--c-oro); background: white; border-radius: 12px; max-width: 600px; text-align: center;">
           <h2 style="margin:0; color:var(--c-testo); font-family:'Cinzel';">${t("studentLabel")}: ${nome}</h2>
           <p style="margin:8px 0 0 0; font-size:1rem; color:#555;"><strong>${t("challengeLabel")}:</strong> ${challengeTitle}<br><strong>${t("dateLabel")}:</strong> ${dt}</p>
         </div>`;
       document.getElementById('ui-final-stars-label').innerText = `${t("finalStars")}: ${stars}`;
-      const body = document.getElementById('report-body'); body.innerHTML = '';
-      adventData.forEach(d => { body.innerHTML += `<tr><td>${d.day}</td><td>${d.question}</td><td>${d.answerOK} ${d.spiegazione ? '<span class="theory-text">'+d.spiegazione+'</span>':''}</td><td>${localStorage.getItem('tent_'+currentSfida.id+'_'+d.day)||1}</td></tr>`; });
+      
+      const body = document.getElementById('report-body'); 
+      body.innerHTML = '';
+      
+      adventData.forEach(d => { 
+        // Formattazione richiesta: 1. Col K (Bold), 2. Col L (Red), riga, 3. Col M (Italic)
+        const cellRisposta = `
+          <span class="report-ok-bold">${d.answerOK || ''}</span>
+          <span class="report-extra-red">${d.extra || ''}</span>
+          <hr class="report-sep">
+          <span class="report-theory-italic">${d.spiegazione || ''}</span>
+        `;
+        
+        body.innerHTML += `
+          <tr>
+            <td>${d.day}</td>
+            <td>${d.question}</td>
+            <td>${cellRisposta}</td>
+            <td>${localStorage.getItem('tent_'+currentSfida.id+'_'+d.day)||1}</td>
+          </tr>`; 
+      });
       if (window.MathJax) MathJax.typeset();
     }
 
-    /* ANIMAZIONI */
+    function stampaReport() {
+      window.focus();
+      setTimeout(() => { window.print(); }, 250);
+    }
+
     function animateCorrectStar(btn) {
-      const star = document.createElement('div');
-      star.className = 'flying-star'; star.innerText = '⭐';
-      star.style.position = 'fixed'; star.style.zIndex = '5000'; star.style.transition = 'all 0.8s ease-in';
-      const r = btn.getBoundingClientRect();
-      star.style.left = (r.left + r.width/2) + 'px'; star.style.top = r.top + 'px';
-      document.body.appendChild(star);
-      const target = document.querySelector('#stars-count-header').getBoundingClientRect();
-      setTimeout(() => { star.style.left = target.left + 'px'; star.style.top = target.top + 'px'; star.style.opacity = '0'; }, 50);
-      setTimeout(() => { star.remove(); stars++; aggiornaStelleVisive(); }, 850);
+      const star = document.createElement('div'); star.className = 'flying-star'; star.innerText = '⭐';
+      const rect = btn.getBoundingClientRect(); star.style.left = rect.left + (rect.width / 2) + 'px'; star.style.top = rect.top + 'px';
+      star.style.transition = "all 0.8s ease-in-out"; document.body.appendChild(star);
+      const target = document.getElementById('stars-count-header').getBoundingClientRect();
+      setTimeout(() => { star.style.left = target.left + 'px'; star.style.top = target.top + 'px'; star.style.transform = "scale(0.5) rotate(360deg)"; star.style.opacity = "0"; }, 50);
+      setTimeout(() => star.remove(), 850);
     }
 
     function animatePoop(btn) {
-      const p = document.createElement('div');
-      p.className = 'exploding-poop'; p.innerText = '💩';
-      p.style.position = 'fixed'; p.style.zIndex = '5000'; p.style.transition = 'all 0.6s ease-out';
-      const r = btn.getBoundingClientRect();
-      p.style.left = (r.left + r.width/2 - 15) + 'px'; p.style.top = (r.top - 20) + 'px';
-      document.body.appendChild(p);
-      stars--; aggiornaStelleVisive();
-      setTimeout(() => { p.style.transform = 'translateY(-50px) scale(1.5)'; p.style.opacity = '0'; }, 50);
-      setTimeout(() => p.remove(), 650);
+      const poop = document.createElement('div'); poop.className = 'exploding-poop'; poop.innerText = '💩';
+      const rect = btn.getBoundingClientRect(); poop.style.left = rect.left + (rect.width / 2) - 15 + 'px'; poop.style.top = rect.top - 20 + 'px';
+      poop.style.transition = "all 0.6s ease-out"; document.body.appendChild(poop);
+      setTimeout(() => { poop.style.transform = "translateY(-50px) scale(1.5)"; poop.style.opacity = "0"; }, 50);
+      setTimeout(() => poop.remove(), 650);
     }
-
-    function aggiornaStelleVisive() {
-      const el = document.getElementById('stars-count-header');
-      if (el) { el.innerText = stars; el.style.color = stars < 0 ? "#e74c3c" : "var(--c-oro)"; }
-      localStorage.setItem('stars_' + currentSfida.id, stars);
-    }
-
-    function chiudiEProsegui() { closeModal(); render(); }
 
     function parseCSV(csv) {
       return csv.split(/\r?\n/).filter(r => r !== "").map(row => {
@@ -592,17 +529,35 @@
         for (let i = 0; i < row.length; i++) {
           let c = row[i];
           if (c === '"') { if (inQ && row[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
-          else if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; }
-          else cur += c;
+          else if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; } else cur += c;
         }
         out.push(cur.trim()); return out;
       });
     }
 
     function tornaAlMenu() { 
-      document.getElementById('game-screen').style.display = 'none';
-      document.getElementById('report-area').style.display = 'none';
+      document.getElementById('game-screen').style.display = 'none'; 
+      document.getElementById('report-area').style.display = 'none'; 
       if (currentMateria) renderMenu(currentMateria); else renderCategories(); 
+    }
+    
+    function resetGame() { 
+        if (confirm("Vuoi resettare i progressi di questa specifica sfida?")) { 
+            const sId = currentSfida.id;
+            adventData.forEach(d => {
+                localStorage.removeItem('day_' + sId + '_' + d.day);
+                localStorage.removeItem('tent_' + sId + '_' + d.day);
+            });
+            localStorage.removeItem('stars_' + sId);
+            location.reload(); 
+        } 
+    }
+    
+    function resetTutto() { 
+        if (confirm("Attenzione: vuoi cancellare TUTTI i progressi di ogni sfida e materia?")) { 
+            localStorage.clear(); 
+            location.reload(); 
+        } 
     }
     
     window.onload = init;
