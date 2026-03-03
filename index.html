@@ -360,16 +360,23 @@
         const resp = await fetch(targetUrl);
         const rows = parseCSV(await resp.text());
         TOTAL_LEVELS = parseInt(rows[1][1]) || 0;
-        adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => ({
-          day: i + 1, 
-          question: v[1],      // B: Domanda
-          checkAnswer: v[2],   // C: Risp_corr
-          answerOK: v[10],     // K: RispostaOK
-          extra: v[11],        // L: Colonna L (Richiesta utente)
-          spiegazione: v[12],  // M: Teoria
-          image: v[13],        // <--- AGGIUNGI QUESTA: Colonna N (URL Immagine Domanda)
-          options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o)
-        }));
+
+adventData = rows.slice(4, 4 + TOTAL_LEVELS).map((v, i) => {
+  // Questo log apparirà nella console (F12) e ti dirà cosa c'è nella colonna 13
+  console.log(`Riga ${i+1} - Colonna 13 contiene:`, v[13]);
+  
+  return {
+    day: i + 1, 
+    question: v[1],      
+    checkAnswer: v[2],   
+    answerOK: v[10],     
+    extra: v[11],        
+    spiegazione: v[12],  
+    image: v[13] ? v[13].trim() : "", // Pulizia spazi bianchi
+    options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o)
+  };
+});
+
         render();
       } catch (e) { tornaAlMenu(); }
     }
@@ -537,17 +544,42 @@ function openQuiz(day) {
       setTimeout(() => poop.remove(), 650);
     }
 
-    function parseCSV(csv) {
-      return csv.split(/\r?\n/).filter(r => r !== "").map(row => {
-        const out = []; let cur = '', inQ = false;
-        for (let i = 0; i < row.length; i++) {
-          let c = row[i];
-          if (c === '"') { if (inQ && row[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
-          else if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; } else cur += c;
-        }
-        out.push(cur.trim()); return out;
-      });
+function parseCSV(csv) {
+  const rows = [];
+  let currentField = '';
+  let inQuotes = false;
+  let currentRow = [];
+
+  for (let i = 0; i < csv.length; i++) {
+    const char = csv[i];
+    const nextChar = csv[i + 1];
+
+    if (char === '"' && inQuotes && nextChar === '"') {
+      currentField += '"';
+      i++;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      currentRow.push(currentField.trim());
+      currentField = '';
+    } else if ((char === '\r' || char === '\n') && !inQuotes) {
+      if (currentRow.length > 0 || currentField !== '') {
+        currentRow.push(currentField.trim());
+        rows.push(currentRow);
+        currentRow = [];
+        currentField = '';
+      }
+      if (char === '\r' && nextChar === '\n') i++;
+    } else {
+      currentField += char;
     }
+  }
+  if (currentRow.length > 0 || currentField !== '') {
+    currentRow.push(currentField.trim());
+    rows.push(currentRow);
+  }
+  return rows;
+}
 
     function tornaAlMenu() { 
       document.getElementById('game-screen').style.display = 'none'; 
