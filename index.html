@@ -414,14 +414,16 @@ function openQuiz(day) {
   const cont = document.getElementById('modal-body');
   document.getElementById('feedback-msg').innerText = "";
   
-  // Testo della domanda
   let h = `<h3>${t("thQ")} ${day}</h3><p>${d.question}</p>`;
   
-  // --- AGGIUNGI DA QUI ---
-  // Se esiste un URL immagine, aggiungi il tag img
-  if (d.image && d.image.trim() !== "") {
-    h += `<div style="margin: 15px 0;">
-            <img src="${d.image}" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
+  // LOG DI CONTROLLO: premi F12 nel browser per vedere se il link arriva qui
+  console.log("Link immagine trovato per il giorno " + day + ":", d.image);
+
+  if (d.image && d.image.trim() !== "" && d.image !== "undefined") {
+    h += `<div style="margin: 15px 0; display: flex; justify-content: center;">
+            <img src="${d.image.trim()}" 
+                 alt="Immagine Domanda"
+                 style="max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--c-oro); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
           </div>`;
   }
       if (d.options.length > 0) {
