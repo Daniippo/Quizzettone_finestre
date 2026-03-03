@@ -367,6 +367,7 @@
           answerOK: v[10],     // K: RispostaOK
           extra: v[11],        // L: Colonna L (Richiesta utente)
           spiegazione: v[12],  // M: Teoria
+          image: v[13],        // <--- AGGIUNGI QUESTA: Colonna N (URL Immagine Domanda)
           options: [v[3], v[4], v[5], v[6], v[7]].filter(o => o)
         }));
         render();
@@ -408,10 +409,21 @@
       av.style.transform = `translate(${x}px, ${y}px)`;
     }
 
-    function openQuiz(day) {
-      const d = adventData[day - 1]; const cont = document.getElementById('modal-body');
-      document.getElementById('feedback-msg').innerText = "";
-      let h = `<h3>${t("thQ")} ${day}</h3><p>${d.question}</p>`;
+function openQuiz(day) {
+  const d = adventData[day - 1]; 
+  const cont = document.getElementById('modal-body');
+  document.getElementById('feedback-msg').innerText = "";
+  
+  // Testo della domanda
+  let h = `<h3>${t("thQ")} ${day}</h3><p>${d.question}</p>`;
+  
+  // --- AGGIUNGI DA QUI ---
+  // Se esiste un URL immagine, aggiungi il tag img
+  if (d.image && d.image.trim() !== "") {
+    h += `<div style="margin: 15px 0;">
+            <img src="${d.image}" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
+          </div>`;
+  }
       if (d.options.length > 0) {
         d.options.forEach((o, i) => { h += `<button class="btn-ans" style="background:#fff; color:#333; border:2px solid #eee;" onclick="check(${day}, '${String.fromCharCode(65+i)}', this)">${String.fromCharCode(65+i)}. ${o}</button>`; });
       } else {
