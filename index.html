@@ -234,6 +234,7 @@
     </div>
     <div class="no-print" style="margin-top: 25px;">
       <button id="ui-print-btn" class="btn-ans" style="display:inline-block; width:auto; padding: 10px 30px;" onclick="stampaReport()">🖨️ STAMPA</button>
+      <button id="ui-email-btn" class="btn-ans" style="display:inline-block; width:auto; background:#3498db; padding: 10px 30px;" onclick="inviaMail()">📧 INVIA MAIL</button>
       <button id="ui-home-btn" class="btn-ans" style="width:auto; display:inline-block; background:#7f8c8d; padding: 10px 30px;" onclick="tornaAlMenu()">🏠 HOME</button>
     </div>
   </div>
@@ -251,8 +252,8 @@
     
     let LANG = localStorage.getItem("lang") || "it";
     const I18N = {
-      it: { selectSubject: "Seleziona Materia", resetAll: "RESET GLOBALE", backToSubjects: "❮ TORNA", correct: "✨ Corretto!", wrong: "❌ Errato!", continue: "PROSEGUI", reportTitle: "Report Finale", finalStars: "Stelle Totali", thQ: "Domanda", thA: "Risposta", thT: "Tentativi", print: "🖨️ STAMPA", home: "🏠 HOME", studentLabel: "ALUNNO", challengeLabel: "Sfida", dateLabel: "Data", challenges: "SFIDE", promptName: "Sfida completata! Inserisci il tuo nome per il report:" },
-      en: { selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK", correct: "✨ Correct!", wrong: "❌ Wrong!", continue: "CONTINUE", reportTitle: "Final Report", finalStars: "Total Stars", thQ: "Question", thA: "Response", thT: "Attempts", print: "🖨️ PRINT", home: "🏠 HOME", studentLabel: "STUDENT", challengeLabel: "Challenge", dateLabel: "Date", challenges: "CHALLENGES", promptName: "Challenge completed! Enter your name for the report:" }
+      it: { selectSubject: "Seleziona Materia", resetAll: "RESET GLOBALE", backToSubjects: "❮ TORNA", correct: "✨ Corretto!", wrong: "❌ Errato!", continue: "PROSEGUI", reportTitle: "Report Finale", finalStars: "Stelle Totali", thQ: "Domanda", thA: "Risposta", thT: "Tentativi", print: "🖨️ STAMPA",email: "📧 INVIA MAIL", home: "🏠 HOME", studentLabel: "ALUNNO", challengeLabel: "Sfida", dateLabel: "Data", challenges: "SFIDE", promptName: "Sfida completata! Inserisci il tuo nome per il report:" },
+      en: { selectSubject: "Select Subject", resetAll: "GLOBAL RESET", backToSubjects: "❮ BACK", correct: "✨ Correct!", wrong: "❌ Wrong!", continue: "CONTINUE", reportTitle: "Final Report", finalStars: "Total Stars", thQ: "Question", thA: "Response", thT: "Attempts", print: "🖨️ PRINT",email: "📧 SEND EMAIL", home: "🏠 HOME", studentLabel: "STUDENT", challengeLabel: "Challenge", dateLabel: "Date", challenges: "CHALLENGES", promptName: "Challenge completed! Enter your name for the report:" }
     };
 
     let SFIDE_CARICATE = [], SFIDE_PER_MATERIA = {}, currentSfida = null, currentMateria = null, adventData = [], TOTAL_LEVELS = 0, stars = 0, currentScreen = 'category';
@@ -275,6 +276,7 @@
       document.getElementById("th-a").innerText = t("thA");
       document.getElementById("th-t").innerText = t("thT");
       document.getElementById("ui-print-btn").innerText = t("print");
+      document.getElementById("ui-email-btn").innerText = t("email");
       document.getElementById("ui-home-btn").innerText = t("home");
       if (document.getElementById('category-screen').offsetParent !== null) renderCategories();
     }
@@ -526,7 +528,29 @@ function openQuiz(day) {
       window.focus();
       setTimeout(() => { window.print(); }, 250);
     }
+function inviaMail() {
+    const nomeStudente = document.getElementById('report-name-input').value || "Studente";
+    const nomeSfida = LANG === 'it' ? currentSfida.titolo : currentSfida.titoloEN;
+    const destinatario = "daniela.ippolito@liceocavalierivb.edu.it";
+    const oggetto = `risultato quizzettone: ${nomeSfida} - ${nomeStudente}`;
+    
+    // Creiamo un corpo del messaggio con i dati principali
+    let corpo = `Report di: ${nomeStudente}\n`;
+    corpo += `Sfida: ${nomeSfida}\n`;
+    corpo += `Stelle Totali: ${stars}\n\n`;
+    corpo += `Dettagli Risposte:\n`;
+    
+    adventData.forEach(d => {
+        const tentativi = localStorage.getItem('tent_' + currentSfida.id + '_' + d.day) || 1;
+        corpo += `Livello ${d.day}: ${d.question.substring(0, 30)}... | Tentativi: ${tentativi}\n`;
+    });
 
+    // Codifica per URL
+    const mailtoLink = `mailto:${destinatario}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(corpo)}`;
+    
+    // Apre il client di posta
+    window.location.href = mailtoLink;
+}
     function animateCorrectStar(btn) {
       const star = document.createElement('div'); star.className = 'flying-star'; star.innerText = '⭐';
       const rect = btn.getBoundingClientRect(); star.style.left = rect.left + (rect.width / 2) + 'px'; star.style.top = rect.top + 'px';
